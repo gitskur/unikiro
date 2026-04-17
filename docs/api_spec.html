@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coupa AI Facilitator - API 명세서</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#e6edf3}
+header{background:#161b22;border-bottom:1px solid #30363d;padding:14px 28px}
+header h1{font-size:17px;font-weight:700;color:#f0f6fc}
+header p{font-size:11px;color:#8b949e;margin-top:3px}
+.wrap{max-width:900px;margin:0 auto;padding:28px}
+.sec{font-size:13px;font-weight:700;color:#e60012;border-left:3px solid #e60012;padding-left:10px;margin:28px 0 14px}
+.card{background:#161b22;border:1px solid #30363d;border-radius:10px;margin-bottom:16px;overflow:hidden}
+.card-head{padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #30363d}
+.card-body{padding:16px 18px}
+.method{font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px}
+.get{background:#0d1f0d;color:#56d364;border:1px solid #22c55e}
+.post{background:#0d1f2d;color:#79c0ff;border:1px solid #4a6cf7}
+.opt{background:#1f1500;color:#e3b341;border:1px solid #f0ad00}
+.path{font-family:monospace;font-size:13px;color:#f0f6fc;font-weight:600}
+.badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700}
+.b-ok{background:#0d1f0d;color:#56d364;border:1px solid #22c55e}
+.b-err{background:#1f0d0d;color:#ff7b72;border:1px solid #e60012}
+.b-warn{background:#1f1500;color:#e3b341;border:1px solid #f0ad00}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px}
+th{background:#21262d;color:#8b949e;padding:7px 12px;text-align:left;font-weight:600}
+td{padding:7px 12px;border-bottom:1px solid #21262d;color:#e6edf3;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.code{background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:12px 14px;font-family:monospace;font-size:12px;line-height:1.8;overflow-x:auto;margin:8px 0}
+.kw{color:#ff7b72}.fn{color:#d2a8ff}.str{color:#a5d6ff}.cm{color:#8b949e}.num{color:#79c0ff}
+.label{font-size:11px;color:#8b949e;margin-bottom:4px;font-weight:600}
+.req{color:#ff7b72;font-size:10px;margin-left:4px}
+.opt-tag{color:#8b949e;font-size:10px;margin-left:4px}
+</style>
+</head>
+<body>
+<header>
+  <h1>📋 Coupa AI Facilitator — API 명세서</h1>
+  <p>Base URL: https://{api-id}.execute-api.us-east-1.amazonaws.com/prod &nbsp;|&nbsp; Version: 1.0.0 &nbsp;|&nbsp; 2026-04-17</p>
+</header>
+<div class="wrap">
+
+<div class="sec">개요</div>
+<div class="card">
+  <div class="card-body">
+    <table>
+      <tr><td style="color:#8b949e;width:140px">Base URL</td><td><code style="color:#a5d6ff">https://{api-id}.execute-api.us-east-1.amazonaws.com/prod</code></td></tr>
+      <tr><td style="color:#8b949e">인증</td><td>없음 (Open — 테스트용, 운영 시 API Key 추가 권장)</td></tr>
+      <tr><td style="color:#8b949e">Content-Type</td><td><code style="color:#a5d6ff">application/json</code></td></tr>
+      <tr><td style="color:#8b949e">CORS</td><td>허용 (<code style="color:#a5d6ff">Access-Control-Allow-Origin: *</code>)</td></tr>
+      <tr><td style="color:#8b949e">백엔드</td><td>AWS Lambda (Python 3.12) + Amazon Bedrock Claude 3 Sonnet</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="sec">엔드포인트</div>
+
+<!-- POST /chat -->
+<div class="card">
+  <div class="card-head">
+    <span class="method post">POST</span>
+    <span class="path">/chat</span>
+    <span style="font-size:12px;color:#8b949e;margin-left:8px">Chat UI용 대화 API</span>
+  </div>
+  <div class="card-body">
+    <div class="label">Request Body <span class="req">*필수</span></div>
+    <table>
+      <tr><th>필드</th><th>타입</th><th>필수</th><th>설명</th></tr>
+      <tr><td><code>messages</code></td><td>array</td><td><span class="req">필수</span></td><td>대화 히스토리 배열 (OpenAI 형식)</td></tr>
+      <tr><td><code>messages[].role</code></td><td>string</td><td><span class="req">필수</span></td><td><code>"user"</code> 또는 <code>"assistant"</code></td></tr>
+      <tr><td><code>messages[].content</code></td><td>string</td><td><span class="req">필수</span></td><td>메시지 내용</td></tr>
+    </table>
+    <div class="label">Request 예시</div>
+    <div class="code">{
+  <span class="str">"messages"</span>: [
+    { <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"500만원 IT 장비 구매 절차 알려줘"</span> }
+  ]
+}</div>
+    <div class="label" style="margin-top:12px">Response</div>
+    <table>
+      <tr><th>상태코드</th><th>필드</th><th>타입</th><th>설명</th></tr>
+      <tr><td><span class="badge b-ok">200</span></td><td><code>reply</code></td><td>string</td><td>Claude 답변 (마크다운 형식)</td></tr>
+      <tr><td><span class="badge b-err">400</span></td><td><code>error</code></td><td>string</td><td>"messages required"</td></tr>
+      <tr><td><span class="badge b-err">500</span></td><td><code>error</code></td><td>string</td><td>Lambda/Bedrock 내부 오류 메시지</td></tr>
+    </table>
+    <div class="label">Response 예시 (200)</div>
+    <div class="code">{
+  <span class="str">"reply"</span>: <span class="str">"500만원은 **팀장 → 구매팀** 승인이 필요합니다.\n\n**필요 서류**\n- 구매요청서(A-01)\n- 견적서 2개 이상"</span>
+}</div>
+  </div>
+</div>
+
+<!-- POST /teams -->
+<div class="card">
+  <div class="card-head">
+    <span class="method post">POST</span>
+    <span class="path">/teams</span>
+    <span style="font-size:12px;color:#8b949e;margin-left:8px">Microsoft Teams Bot Framework 웹훅</span>
+  </div>
+  <div class="card-body">
+    <div class="label">Request Body — Bot Framework Activity</div>
+    <table>
+      <tr><th>필드</th><th>타입</th><th>설명</th></tr>
+      <tr><td><code>type</code></td><td>string</td><td><code>"message"</code>일 때만 처리, 나머지는 200 무시</td></tr>
+      <tr><td><code>text</code></td><td>string</td><td>사용자 메시지 텍스트</td></tr>
+      <tr><td><code>id</code></td><td>string</td><td>Activity ID (replyToId에 사용)</td></tr>
+    </table>
+    <div class="label">Request 예시 (Azure Bot → Lambda)</div>
+    <div class="code">{
+  <span class="str">"type"</span>: <span class="str">"message"</span>,
+  <span class="str">"id"</span>: <span class="str">"f:abc123"</span>,
+  <span class="str">"text"</span>: <span class="str">"계약 연장 절차 알려줘"</span>,
+  <span class="str">"from"</span>: { <span class="str">"id"</span>: <span class="str">"user-id"</span>, <span class="str">"name"</span>: <span class="str">"홍길동"</span> }
+}</div>
+    <div class="label" style="margin-top:12px">Response — Reply Activity</div>
+    <table>
+      <tr><th>상태코드</th><th>필드</th><th>설명</th></tr>
+      <tr><td><span class="badge b-ok">200</span></td><td><code>type, text, textFormat, replyToId</code></td><td>Teams 답변 Activity</td></tr>
+      <tr><td><span class="badge b-ok">200</span></td><td>(빈 응답)</td><td>type != "message" 또는 text 없음</td></tr>
+      <tr><td><span class="badge b-err">500</span></td><td><code>error</code></td><td>내부 오류</td></tr>
+    </table>
+    <div class="label">Response 예시 (200)</div>
+    <div class="code">{
+  <span class="str">"type"</span>: <span class="str">"message"</span>,
+  <span class="str">"text"</span>: <span class="str">"계약 연장 시 필요 서류:\n- 계약연장요청서(C-02)\n- 기존 계약서 사본"</span>,
+  <span class="str">"textFormat"</span>: <span class="str">"markdown"</span>,
+  <span class="str">"replyToId"</span>: <span class="str">"f:abc123"</span>
+}</div>
+  </div>
+</div>
+
+<!-- OPTIONS /chat -->
+<div class="card">
+  <div class="card-head">
+    <span class="method opt">OPTIONS</span>
+    <span class="path">/chat</span>
+    <span style="font-size:12px;color:#8b949e;margin-left:8px">CORS Preflight</span>
+  </div>
+  <div class="card-body">
+    <div class="label">Response Headers (200)</div>
+    <div class="code">Access-Control-Allow-Origin:  *
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Allow-Methods: POST, OPTIONS</div>
+  </div>
+</div>
+
+<div class="sec">공통 응답 헤더</div>
+<div class="card">
+  <div class="card-body">
+    <div class="code">Content-Type:                 application/json
+Access-Control-Allow-Origin:  *
+Access-Control-Allow-Headers: Content-Type, Authorization
+Access-Control-Allow-Methods: POST, OPTIONS</div>
+  </div>
+</div>
+
+<div class="sec">에러 코드 정의</div>
+<div class="card">
+  <div class="card-body">
+    <table>
+      <tr><th>코드</th><th>원인</th><th>해결</th></tr>
+      <tr><td><span class="badge b-err">400</span></td><td>messages 배열 누락 또는 빈 배열</td><td>요청 body에 messages 포함</td></tr>
+      <tr><td><span class="badge b-err">500</span></td><td>Bedrock AccessDeniedException</td><td>Bedrock 콘솔에서 Claude 모델 활성화</td></tr>
+      <tr><td><span class="badge b-err">500</span></td><td>S3 NoSuchBucket</td><td>DOCS_BUCKET 환경변수 확인</td></tr>
+      <tr><td><span class="badge b-err">500</span></td><td>Bedrock ValidationException (토큰 초과)</td><td>messages 길이 제한 또는 히스토리 truncate</td></tr>
+      <tr><td><span class="badge b-warn">504</span></td><td>Lambda 60초 타임아웃</td><td>메모리 증가 또는 PDF 파일 크기 최적화</td></tr>
+    </table>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
