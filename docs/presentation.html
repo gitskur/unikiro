@@ -19,6 +19,14 @@ body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;overflow
 .nav .dots{display:flex;gap:6px;align-items:center}
 .dot{width:7px;height:7px;border-radius:50%;background:#30363d;cursor:pointer;transition:.2s}
 .dot.active{background:#388bfd}
+.pdf-btn{position:fixed;top:16px;right:16px;z-index:200;background:#388bfd;border:none;color:#fff;padding:7px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600}
+.pdf-btn:hover{background:#1f6feb}
+@media print{
+  .nav,.pdf-btn{display:none!important}
+  body{overflow:visible!important;height:auto!important}
+  .slides{height:auto!important;position:static!important}
+  .slide{display:flex!important;position:relative!important;page-break-after:always;height:100vh;break-after:page}
+}
 
 /* Typography */
 .label{color:#388bfd;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
@@ -85,6 +93,7 @@ td{padding:9px 14px;border-bottom:1px solid #21262d;color:#e6edf3}
 </head>
 <body>
 <div class="slides">
+<button class="pdf-btn" onclick="window.print()">⬇ PDF 저장</button>
 
 
 <!-- Slide 1: Title -->
