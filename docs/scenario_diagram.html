@@ -3,671 +3,471 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coupa AI Facilitator - 시나리오 상세 다이어그램</title>
+<title>시나리오 다이어그램 - UniKiro</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#e6edf3}
-header{background:#161b22;border-bottom:1px solid #30363d;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
-header h1{font-size:17px;font-weight:700;color:#f0f6fc}
-header p{font-size:11px;color:#8b949e;margin-top:2px}
-.tabs{display:flex;border-bottom:1px solid #30363d;padding:0 28px;background:#161b22;overflow-x:auto}
-.tab{padding:11px 18px;font-size:12px;cursor:pointer;border:none;background:none;color:#8b949e;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
-.tab.active{color:#f0f6fc;border-bottom-color:#e60012;font-weight:600}
-.panel{display:none;padding:24px 28px}
-.panel.active{display:block}
-.sec{font-size:12px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; font-size: 14px; }
+  h1 { text-align: center; padding: 24px 0 8px; color: #58a6ff; font-size: 22px; letter-spacing: 1px; }
+  .subtitle { text-align: center; color: #8b949e; font-size: 12px; margin-bottom: 20px; }
 
-/* Scenario flow */
-.sf{display:flex;flex-direction:column;gap:0}
-.sf-row{display:flex;align-items:stretch;gap:0;min-height:48px}
-.sf-actor{width:110px;flex-shrink:0;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;font-size:11px;font-weight:600;color:#8b949e}
-.sf-line{width:2px;flex-shrink:0;background:#21262d;position:relative}
-.sf-line.active-line{background:#e60012}
-.sf-line.teams-line{background:#0078d4}
-.sf-line.ok-line{background:#22c55e}
-.sf-line.warn-line{background:#f0ad00}
-.sf-msg{flex:1;display:flex;align-items:center;padding:6px 14px;gap:10px}
-.arrow-r{color:#30363d;font-size:14px}
-.arrow-r.red{color:#e60012}
-.arrow-r.blue{color:#0078d4}
-.arrow-r.green{color:#22c55e}
-.arrow-r.orange{color:#f97316}
-.arrow-r.yellow{color:#f0ad00}
-.bubble{padding:6px 12px;border-radius:6px;font-size:12px;line-height:1.5;max-width:480px}
-.b-user{background:#1a1a2e;border:1px solid #e60012;color:#ff6b6b}
-.b-bot{background:#161b22;border:1px solid #30363d;color:#e6edf3}
-.b-ok{background:#0d1f0d;border:1px solid #22c55e;color:#56d364}
-.b-warn{background:#1f1500;border:1px solid #f0ad00;color:#e3b341}
-.b-err{background:#1f0d0d;border:1px solid #e60012;color:#ff7b72}
-.b-info{background:#0d1f2d;border:1px solid #0078d4;color:#79c0ff}
-.b-gray{background:#161b22;border:1px solid #30363d;color:#8b949e}
-.tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:4px;margin-right:4px;font-weight:700}
-.tag-ok{background:#0d1f0d;color:#56d364;border:1px solid #22c55e}
-.tag-err{background:#1f0d0d;color:#ff7b72;border:1px solid #e60012}
-.tag-warn{background:#1f1500;color:#e3b341;border:1px solid #f0ad00}
-.tag-info{background:#0d1f2d;color:#79c0ff;border:1px solid #0078d4}
+  /* Tabs */
+  .tabs { display: flex; justify-content: center; gap: 4px; margin-bottom: 24px; }
+  .tab-btn {
+    padding: 8px 22px; border: 1px solid #30363d; border-radius: 6px;
+    background: #161b22; color: #8b949e; cursor: pointer; font-size: 13px; transition: all .2s;
+  }
+  .tab-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+  .tab-btn.active { background: #1f6feb; border-color: #1f6feb; color: #fff; }
 
-/* Grid */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px}
-.card h4{font-size:13px;font-weight:700;margin-bottom:12px}
+  .tab-content { display: none; max-width: 960px; margin: 0 auto; padding: 0 16px 40px; }
+  .tab-content.active { display: block; }
 
-/* Decision tree */
-.dt{display:flex;flex-direction:column;gap:8px}
-.dt-node{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:8px;font-size:12px}
-.dt-icon{font-size:16px;flex-shrink:0;margin-top:1px}
-.dt-body h5{font-size:12px;font-weight:700;margin-bottom:3px}
-.dt-body p{font-size:11px;color:#8b949e;line-height:1.6}
-.dt-body code{background:#21262d;padding:1px 5px;border-radius:3px;font-size:11px;font-family:monospace}
-.indent{margin-left:28px;border-left:2px solid #21262d;padding-left:12px}
+  /* Flow diagram */
+  .flow { display: flex; flex-direction: column; gap: 0; }
+  .flow-row { display: flex; align-items: center; gap: 0; }
+  .flow-row.indent { padding-left: 60px; }
+  .flow-row.indent2 { padding-left: 120px; }
+
+  .node {
+    border-radius: 8px; padding: 10px 16px; font-size: 13px; min-width: 180px;
+    text-align: center; position: relative; cursor: default; transition: transform .15s;
+    border: 1px solid transparent;
+  }
+  .node:hover { transform: scale(1.03); }
+  .node.actor   { background: #1c2a3a; border-color: #58a6ff; color: #58a6ff; }
+  .node.process { background: #1a2332; border-color: #3fb950; color: #3fb950; }
+  .node.storage { background: #2a1f3a; border-color: #bc8cff; color: #bc8cff; border-radius: 4px; }
+  .node.api     { background: #1f2a1a; border-color: #56d364; color: #56d364; }
+  .node.result  { background: #1a2a1a; border-color: #3fb950; color: #e6edf3; font-weight: 600; }
+  .node.error   { background: #2a1a1a; border-color: #f85149; color: #f85149; }
+  .node.warn    { background: #2a2010; border-color: #e3b341; color: #e3b341; }
+  .node.info    { background: #102030; border-color: #58a6ff; color: #79c0ff; }
+  .node.teams   { background: #1a1f3a; border-color: #6e7bff; color: #a5b4fc; }
+  .node.decision { background: #2a2010; border-color: #e3b341; color: #e3b341; border-radius: 50%; min-width: 120px; padding: 14px 10px; }
+
+  .arrow { color: #484f58; font-size: 20px; padding: 0 6px; user-select: none; }
+  .arrow.down { display: flex; justify-content: center; color: #484f58; font-size: 18px; padding: 2px 0; }
+  .label { font-size: 11px; color: #8b949e; padding: 0 6px; white-space: nowrap; }
+
+  .section { margin-bottom: 32px; }
+  .section-title {
+    font-size: 13px; font-weight: 700; color: #8b949e; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 12px; padding-bottom: 6px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 10px;
+    margin-left: 6px; vertical-align: middle; font-weight: 700;
+  }
+  .badge.pass  { background: #1a4a1a; color: #3fb950; border: 1px solid #3fb950; }
+  .badge.partial { background: #3a2a00; color: #e3b341; border: 1px solid #e3b341; }
+  .badge.fail  { background: #3a1010; color: #f85149; border: 1px solid #f85149; }
+
+  /* Error / Edge cards */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .card {
+    background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 14px 16px;
+    transition: border-color .2s;
+  }
+  .card:hover { border-color: #58a6ff; }
+  .card-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .card-title.err  { color: #f85149; }
+  .card-title.warn { color: #e3b341; }
+  .card-title.info { color: #58a6ff; }
+  .card-body { font-size: 12px; color: #8b949e; line-height: 1.7; }
+  .card-body .trigger { color: #c9d1d9; }
+  .card-body .response { color: #3fb950; }
+  .card-body .fallback { color: #e3b341; }
+
+  /* Decision tree */
+  .tree { font-family: monospace; font-size: 13px; line-height: 2; color: #c9d1d9; }
+  .tree .q  { color: #e3b341; font-weight: 700; }
+  .tree .yes { color: #3fb950; }
+  .tree .no  { color: #f85149; }
+  .tree .action { color: #79c0ff; }
+  .tree .note { color: #8b949e; font-size: 11px; }
+
+  /* Tooltip */
+  .node[data-tip] { cursor: help; }
+  .tooltip {
+    display: none; position: fixed; background: #1c2128; border: 1px solid #30363d;
+    border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #c9d1d9;
+    max-width: 260px; z-index: 999; pointer-events: none; line-height: 1.6;
+  }
+  .tooltip.show { display: block; }
+
+  /* Timing bar */
+  .timing { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+  .timing-label { width: 160px; font-size: 12px; color: #8b949e; }
+  .timing-bar-wrap { flex: 1; background: #21262d; border-radius: 4px; height: 14px; }
+  .timing-bar { height: 14px; border-radius: 4px; transition: width .6s ease; }
+  .timing-val { font-size: 12px; color: #c9d1d9; width: 60px; }
 </style>
 </head>
 <body>
-<header>
-  <div>
-    <h1>🔍 Coupa AI Facilitator — 시나리오 상세 다이어그램</h1>
-    <p>정상 흐름 · 에러 케이스 · 엣지 케이스 · 의사결정 트리</p>
-  </div>
-</header>
+<h1>🔷 UniKiro 시나리오 다이어그램</h1>
+<p class="subtitle">API: POST /chat · /teams · /coupa/webhook · /coupa/approval-webhook &nbsp;|&nbsp; RAG: FAISS 155 chunks · DynamoDB 3턴</p>
+
 <div class="tabs">
-  <button class="tab active" onclick="T('p1',this)">✅ 정상 흐름</button>
-  <button class="tab" onclick="T('p2',this)">❌ 에러 케이스</button>
-  <button class="tab" onclick="T('p3',this)">⚠️ 엣지 케이스</button>
-  <button class="tab" onclick="T('p4',this)">🌳 의사결정 트리</button>
+  <button class="tab-btn active" onclick="showTab('normal')">✅ 정상 흐름</button>
+  <button class="tab-btn" onclick="showTab('error')">❌ 에러 케이스</button>
+  <button class="tab-btn" onclick="showTab('edge')">⚠️ 엣지 케이스</button>
+  <button class="tab-btn" onclick="showTab('decision')">🌿 의사결정 트리</button>
 </div>
 
 
-<!-- P1: 정상 흐름 -->
-<div id="p1" class="panel active">
-  <div class="g2">
+<!-- ===== TAB 1: 정상 흐름 ===== -->
+<div id="tab-normal" class="tab-content active">
 
-    <!-- 시나리오 1 -->
-    <div class="card">
-      <h4><span class="tag tag-ok">HAPPY</span> 구매 절차 문의 → 정상 답변</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">직원</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"500만원 IT 장비 구매 절차 알려줘"</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">캐시 확인 → S3 파싱 → Bedrock 호출</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">봇</div>
-          <div class="sf-line ok-line"></div>
-          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">✅ 팀장 → 구매팀 승인 필요<br>구매요청서(A-01) + 견적서 2개 이상</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">HTTP</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="tag tag-ok">200</span><code style="font-size:11px;color:#8b949e">{ reply: "..." }</code></div>
-        </div>
+  <!-- Scenario 1 -->
+  <div class="section">
+    <div class="section-title">시나리오 1 — 결재라인 질문 <span class="badge pass">UAT PASS</span></div>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="node actor" data-tip="사용자가 POST /chat 으로 질문 전송">👤 사용자</div>
+        <span class="arrow">→</span>
+        <div class="node api" data-tip="POST /chat Lambda 핸들러">POST /chat</div>
+        <span class="arrow">→</span>
+        <div class="node storage" data-tip="DynamoDB에서 최근 3턴 대화 히스토리 로드">DynamoDB<br><small>히스토리 3턴</small></div>
+      </div>
+      <div class="arrow down">↓</div>
+      <div class="flow-row">
+        <div class="node process" data-tip="FAISS 155 chunks 벡터 검색 + process_guide.md 결재라인 정보">FAISS 벡터검색<br><small>155 chunks</small></div>
+        <span class="arrow">→</span>
+        <div class="node storage" data-tip="process_guide.md에서 결재라인 정보 검색">process_guide.md<br><small>결재라인 정보</small></div>
+        <span class="arrow">→</span>
+        <div class="node api" data-tip="Amazon Bedrock Claude 호출">Bedrock Claude</div>
+      </div>
+      <div class="arrow down">↓</div>
+      <div class="flow-row">
+        <div class="node result">✅ 정확한 결재라인 답변 반환</div>
       </div>
     </div>
+  </div>
 
-    <!-- 시나리오 2 -->
-    <div class="card">
-      <h4><span class="tag tag-ok">HAPPY</span> 멀티턴 대화 (문맥 유지)</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">직원</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"계약 연장하려면?"</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">봇</div>
-          <div class="sf-line ok-line"></div>
-          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">계약연장요청서(C-02) + 기존 계약서 사본 필요</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">직원</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"금액이 800만원이야"</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">messages[] 히스토리 포함 → Bedrock 전달</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">봇</div>
-          <div class="sf-line ok-line"></div>
-          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">800만원 → 법무팀 검토 필수 추가 안내</div></div>
-        </div>
+  <!-- Scenario 2 -->
+  <div class="section">
+    <div class="section-title">시나리오 2 — 계약번호 포함 질문 → Coupa API 조회</div>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="node actor">👤 사용자</div>
+        <span class="arrow">→</span>
+        <div class="node api">POST /chat</div>
+        <span class="arrow">→</span>
+        <div class="node process" data-tip="정규식으로 계약번호 추출">계약번호 추출<br><small>regex</small></div>
+        <span class="arrow">→</span>
+        <div class="node api" data-tip="Coupa REST API 실시간 조회">Coupa API<br><small>실시간 조회</small></div>
+      </div>
+      <div class="arrow down">↓</div>
+      <div class="flow-row">
+        <div class="node process">FAISS + Coupa 컨텍스트 병합</div>
+        <span class="arrow">→</span>
+        <div class="node api">Bedrock Claude</div>
+        <span class="arrow">→</span>
+        <div class="node result">✅ 계약 정보 답변 반환</div>
       </div>
     </div>
+  </div>
 
-    <!-- 시나리오 3 -->
-    <div class="card">
-      <h4><span class="tag tag-ok">HAPPY</span> 웜스타트 (캐시 히트)</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">직원</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"긴급 구매 방법은?"</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-info">_doc_cache != None → S3 호출 생략 ⚡</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Bedrock</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">캐시된 문서로 즉시 Claude 호출 (~1초)</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">봇</div>
-          <div class="sf-line ok-line"></div>
-          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">팀장 구두 승인 → 3일 내 사후 서류 제출</div></div>
-        </div>
+  <!-- Scenario 3/4: Timing -->
+  <div class="section">
+    <div class="section-title">시나리오 3/4 — 스타트업 레이턴시</div>
+    <div class="timing">
+      <div class="timing-label">🔥 웜스타트 (캐시 히트)</div>
+      <div class="timing-bar-wrap"><div class="timing-bar" style="width:20%;background:#3fb950;"></div></div>
+      <div class="timing-val">~1초</div>
+    </div>
+    <div class="timing">
+      <div class="timing-label">❄️ 콜드스타트 (인덱스 로딩)</div>
+      <div class="timing-bar-wrap"><div class="timing-bar" style="width:80%;background:#e3b341;"></div></div>
+      <div class="timing-val">~3~5초</div>
+    </div>
+  </div>
+
+  <!-- Scenario 5 -->
+  <div class="section">
+    <div class="section-title">시나리오 5 — D-60 자동 알림</div>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="node process" data-tip="EventBridge 스케줄러 또는 Coupa webhook 트리거">스케줄러 / Webhook</div>
+        <span class="arrow">→</span>
+        <div class="node api">POST /coupa/webhook</div>
+        <span class="arrow">→</span>
+        <div class="node process" data-tip="만료 D-60 계약 필터링">D-60 계약 필터</div>
+      </div>
+      <div class="arrow down">↓</div>
+      <div class="flow-row">
+        <div class="node teams" data-tip="Teams Incoming Webhook으로 Adaptive Card 전송">Teams Adaptive Card<br><small>만료 알림 발송</small></div>
+        <span class="arrow">→</span>
+        <div class="node result">✅ 담당자 채널 알림</div>
       </div>
     </div>
+  </div>
 
-    <!-- 시나리오 4 -->
-    <div class="card">
-      <h4><span class="tag tag-ok">HAPPY</span> 콜드스타트 (최초 파싱)</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">직원</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"예산 외 구매 절차?"</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-warn">_doc_cache == None → S3 파싱 시작 (~3~5초)</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">S3</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">PDF/PPT 다운로드 → pypdf/pptx 파싱 → 캐싱</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">봇</div>
-          <div class="sf-line ok-line"></div>
-          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">예산변경신청서(B-01) 선제출 후 일반 절차</div></div>
-        </div>
+  <!-- Scenario 6 -->
+  <div class="section">
+    <div class="section-title">시나리오 6 — 계약 Approved → Teams 상태변경 알림</div>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="node api" data-tip="Coupa에서 approval 이벤트 수신">POST /coupa/approval-webhook</div>
+        <span class="arrow">→</span>
+        <div class="node process" data-tip="ChannelMapping DynamoDB 조회 후 Teams URL 결정">ChannelMapping 조회</div>
+        <span class="arrow">→</span>
+        <div class="node teams">Teams 상태변경 알림</div>
+      </div>
+      <div class="arrow down">↓</div>
+      <div class="flow-row">
+        <div class="node result">✅ 계약 Approved 알림 전송</div>
       </div>
     </div>
+  </div>
 
+</div>
+
+
+<!-- ===== TAB 2: 에러 케이스 ===== -->
+<div id="tab-error" class="tab-content">
+  <div class="section">
+    <div class="section-title">에러 케이스 — 6가지</div>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-title err">📭 문서에 없는 내용</div>
+        <div class="card-body">
+          <div><span class="trigger">트리거:</span> FAISS 유사도 임계값 미달</div>
+          <div><span class="response">응답:</span> "해당 정보를 찾을 수 없습니다.<br>담당 부서에 확인이 필요합니다."</div>
+          <div>HTTP: <span style="color:#3fb950">200</span> (정상 응답 형식)</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title err">📭 빈 메시지</div>
+        <div class="card-body">
+          <div><span class="trigger">트리거:</span> message 필드 비어있음</div>
+          <div><span class="response">응답:</span> HTTP <span style="color:#f85149">400</span> Bad Request</div>
+          <div>입력 유효성 검사 단계에서 즉시 반환</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title err">🔴 Bedrock 호출 실패</div>
+        <div class="card-body">
+          <div><span class="trigger">트리거:</span> Bedrock API 오류 / 쿼터 초과</div>
+          <div><span class="response">응답:</span> HTTP <span style="color:#f85149">500</span> Internal Server Error</div>
+          <div>CloudWatch 로그 기록</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title warn">⏱️ Coupa API 타임아웃</div>
+        <div class="card-body">
+          <div><span class="trigger">트리거:</span> Coupa API 응답 지연</div>
+          <div class="fallback">폴백: Coupa 컨텍스트 없이 RAG만으로 답변</div>
+          <div>HTTP: <span style="color:#3fb950">200</span> (부분 답변)</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title err">⏰ Lambda 타임아웃</div>
+        <div class="card-body">
+          <div><span class="trigger">트리거:</span> 처리 시간 60초 초과</div>
+          <div><span class="response">응답:</span> HTTP <span style="color:#f85149">504</span> Gateway Timeout</div>
+          <div>API Gateway 레벨에서 반환</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title warn">🗄️ DynamoDB 조회 실패</div>
+        <div class="card-body">
+          <div><span class="trigger">트리거:</span> DynamoDB 연결 오류</div>
+          <div class="fallback">폴백: 히스토리 없이 단일 턴 답변</div>
+          <div>HTTP: <span style="color:#3fb950">200</span> (히스토리 미포함)</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 3: 엣지 케이스 ===== -->
+<div id="tab-edge" class="tab-content">
+  <div class="section">
+    <div class="section-title">엣지 케이스 — 6가지</div>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-title warn">🔍 계약번호 없이 PO 질문 <span class="badge partial">UAT PARTIAL</span></div>
+        <div class="card-body">
+          <div><span class="trigger">트리거:</span> PO 관련 질문, 계약번호 미포함</div>
+          <div class="fallback">처리: Coupa 조회 스킵</div>
+          <div><span class="response">응답:</span> PO 확인 방법 안내 (RAG 기반)</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title info">🌐 영어 질문</div>
+        <div class="card-body">
+          <div><span class="trigger">트리거:</span> 영어로 입력된 질문</div>
+          <div><span class="response">응답:</span> 한국어로 답변 반환</div>
+          <div>Bedrock 프롬프트에 언어 지시 포함</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title info">📏 매우 긴 입력</div>
+        <div class="card-body">
+          <div><span class="trigger">트리거:</span> 입력 8000자 초과</div>
+          <div class="fallback">처리: 8000자 truncate 후 임베딩</div>
+          <div>초과분 무시, 정상 처리 계속</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title info">💬 Teams conversationUpdate</div>
+        <div class="card-body">
+          <div><span class="trigger">트리거:</span> Teams 봇 채널 추가 이벤트</div>
+          <div><span class="response">응답:</span> HTTP <span style="color:#3fb950">200</span> 즉시 반환 (무시)</div>
+          <div>실제 처리 없음</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title warn">📋 Coupa webhook draft 상태</div>
+        <div class="card-body">
+          <div><span class="trigger">트리거:</span> Coupa webhook, status = draft</div>
+          <div class="fallback">처리: 알림 미발송</div>
+          <div>HTTP: <span style="color:#3fb950">200</span> (조용히 무시)</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title warn">🔗 ChannelMapping 없음</div>
+        <div class="card-body">
+          <div><span class="trigger">트리거:</span> DynamoDB ChannelMapping 미존재</div>
+          <div class="fallback">폴백: TEAMS_DEFAULT_WEBHOOK_URL 사용</div>
+          <div>환경변수 기본값으로 알림 전송</div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
 
-<!-- P2: 에러 케이스 -->
-<div id="p2" class="panel">
-  <div class="g2">
-
-    <!-- 에러 1: 문서에 없는 질문 -->
-    <div class="card">
-      <h4><span class="tag tag-err">ERROR</span> 문서에 없는 내용 질문</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">직원</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"복리후생 신청 방법 알려줘"</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Bedrock</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">system prompt: "문서에 없으면 확인 필요 안내"</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">봇</div>
-          <div class="sf-line warn-line"></div>
-          <div class="sf-msg"><span class="arrow-r yellow">←</span><div class="bubble b-warn">⚠️ 해당 내용은 담당 부서에 확인이 필요합니다.<br>구매/계약 관련 질문만 답변 가능합니다.</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">HTTP</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="tag tag-ok">200</span><span style="font-size:11px;color:#8b949e">정상 반환 (에러 아님, 봇 응답)</span></div>
-        </div>
-      </div>
+<!-- ===== TAB 4: 의사결정 트리 ===== -->
+<div id="tab-decision" class="tab-content">
+  <div class="section">
+    <div class="section-title">POST /chat 의사결정 트리</div>
+    <div class="tree">
+<pre>
+POST /chat 수신
+│
+├─ <span class="q">① message 비어있음?</span>
+│   ├─ <span class="yes">YES</span> → <span class="action">HTTP 400 반환</span>
+│   └─ <span class="no">NO</span>  → 계속
+│
+├─ <span class="q">② 입력 길이 > 8000자?</span>
+│   ├─ <span class="yes">YES</span> → <span class="action">8000자 truncate</span>
+│   └─ <span class="no">NO</span>  → 원본 사용
+│
+├─ <span class="q">③ DynamoDB 히스토리 조회 성공?</span>
+│   ├─ <span class="yes">YES</span> → 최근 3턴 컨텍스트 추가
+│   └─ <span class="no">NO</span>  → <span class="action">히스토리 없이 계속</span> <span class="note">(폴백)</span>
+│
+├─ <span class="q">④ 계약번호 추출됨?</span>
+│   ├─ <span class="yes">YES</span> → Coupa API 호출
+│   │   ├─ <span class="q">Coupa 응답 성공?</span>
+│   │   │   ├─ <span class="yes">YES</span> → Coupa 컨텍스트 추가
+│   │   │   └─ <span class="no">NO</span>  → <span class="action">Coupa 컨텍스트 없이 계속</span> <span class="note">(타임아웃 폴백)</span>
+│   └─ <span class="no">NO</span>  → FAISS 검색만 사용
+│
+├─ <span class="q">⑤ FAISS 유사도 임계값 통과?</span>
+│   ├─ <span class="yes">YES</span> → 관련 chunks 컨텍스트 추가
+│   └─ <span class="no">NO</span>  → <span class="action">"해당 정보를 찾을 수 없습니다" 반환</span>
+│
+├─ <span class="q">⑥ Bedrock 호출 성공?</span>
+│   ├─ <span class="yes">YES</span> → <span class="action">HTTP 200 + 답변 반환</span>
+│   └─ <span class="no">NO</span>  → <span class="action">HTTP 500 반환</span>
+│
+└─ <span class="q">⑦ Lambda 60초 초과?</span>
+    └─ <span class="yes">YES</span> → <span class="action">HTTP 504 반환</span>
+</pre>
     </div>
+  </div>
 
-    <!-- 에러 2: 빈 메시지 -->
-    <div class="card">
-      <h4><span class="tag tag-err">ERROR</span> 빈 메시지 / messages 누락</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">클라이언트</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">POST /chat { } <span style="color:#8b949e">(body 없음)</span></div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">messages = body.get("messages", []) → []</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">if not messages: → 400 반환</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">HTTP</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="tag tag-err">400</span><code style="font-size:11px;color:#ff7b72">{ "error": "messages required" }</code></div>
-        </div>
-      </div>
+  <div class="section">
+    <div class="section-title">POST /coupa/webhook 의사결정 트리</div>
+    <div class="tree">
+<pre>
+POST /coupa/webhook 수신
+│
+├─ <span class="q">① status == 'draft'?</span>
+│   ├─ <span class="yes">YES</span> → <span class="action">HTTP 200 (알림 미발송)</span>
+│   └─ <span class="no">NO</span>  → 계속
+│
+├─ <span class="q">② 만료일 D-60 이내?</span>
+│   ├─ <span class="yes">YES</span> → ChannelMapping 조회
+│   │   ├─ <span class="q">매핑 존재?</span>
+│   │   │   ├─ <span class="yes">YES</span> → 해당 채널 Webhook URL 사용
+│   │   │   └─ <span class="no">NO</span>  → <span class="action">TEAMS_DEFAULT_WEBHOOK_URL 폴백</span>
+│   │   └─ <span class="action">Teams Adaptive Card 발송</span>
+│   └─ <span class="no">NO</span>  → <span class="action">HTTP 200 (조건 미충족)</span>
+</pre>
     </div>
+  </div>
 
-    <!-- 에러 3: Bedrock 오류 -->
-    <div class="card">
-      <h4><span class="tag tag-err">ERROR</span> Bedrock 호출 실패</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">직원</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"구매 절차 알려줘"</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Bedrock</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">AccessDeniedException<br>(모델 미활성화 or IAM 권한 없음)</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">except Exception as e: → 500 반환</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">HTTP</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="tag tag-err">500</span><code style="font-size:11px;color:#ff7b72">{ "error": "AccessDeniedException..." }</code></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">해결</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r yellow">→</span><div class="bubble b-warn">Bedrock 콘솔 → Model Access → Claude 승인</div></div>
-        </div>
-      </div>
+  <div class="section">
+    <div class="section-title">POST /teams 의사결정 트리</div>
+    <div class="tree">
+<pre>
+POST /teams 수신
+│
+├─ <span class="q">① type == 'conversationUpdate'?</span>
+│   ├─ <span class="yes">YES</span> → <span class="action">HTTP 200 (무시)</span>
+│   └─ <span class="no">NO</span>  → 계속
+│
+├─ <span class="q">② message 비어있음?</span>
+│   ├─ <span class="yes">YES</span> → <span class="action">HTTP 400</span>
+│   └─ <span class="no">NO</span>  → /chat 로직과 동일하게 처리
+│
+└─ <span class="action">Teams 응답 메시지 반환</span>
+</pre>
     </div>
-
-    <!-- 에러 4: S3 파싱 실패 -->
-    <div class="card">
-      <h4><span class="tag tag-err">ERROR</span> S3 파일 파싱 실패</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">S3에서 손상된 PDF 다운로드</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">pypdf</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">PdfReadError: EOF marker not found</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-warn">except: parts.append("[파일명 파싱 실패]")<br>→ 나머지 파일은 계속 처리</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">봇</div>
-          <div class="sf-line ok-line"></div>
-          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">다른 파일 기반으로 부분 답변 가능</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">HTTP</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="tag tag-ok">200</span><span style="font-size:11px;color:#8b949e">서비스 중단 없이 계속 동작</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 에러 5: Lambda 타임아웃 -->
-    <div class="card">
-      <h4><span class="tag tag-err">ERROR</span> Lambda 타임아웃 (60초 초과)</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">직원</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">질문 전송 (대용량 PDF 파싱 중)</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">Task timed out after 60.00 seconds</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">API GW</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="tag tag-err">504</span><code style="font-size:11px;color:#ff7b72">Endpoint request timed out</code></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Chat UI</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r yellow">←</span><div class="bubble b-warn">⚠️ API 연결 오류입니다. API URL을 확인해 주세요.</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">해결</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">→</span><div class="bubble b-info">메모리 512MB↑ / PDF 파일 크기 최적화</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 에러 6: CORS 오류 -->
-    <div class="card">
-      <h4><span class="tag tag-err">ERROR</span> CORS 오류 (브라우저)</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">브라우저</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">OPTIONS preflight 요청</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">API GW</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">CORS header 없음 → 브라우저 차단</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">콘솔</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">Access-Control-Allow-Origin 헤더 없음</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">해결</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r green">→</span><div class="bubble b-ok">Lambda _resp()에 CORS 헤더 포함<br>CloudFormation OPTIONS method 재배포</div></div>
-        </div>
-      </div>
-    </div>
-
   </div>
 </div>
 
-
-<!-- P3: 엣지 케이스 -->
-<div id="p3" class="panel">
-  <div class="g2">
-
-    <!-- 엣지 1: 욕설/부적절한 입력 -->
-    <div class="card">
-      <h4><span class="tag tag-warn">EDGE</span> 욕설 / 부적절한 입력</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">직원</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"이 시스템 왜 이렇게 별로야 ㅡㅡ"</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Bedrock</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">Claude의 기본 안전 필터 적용<br>system prompt: 구매/계약만 답변</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">봇</div>
-          <div class="sf-line warn-line"></div>
-          <div class="sf-msg"><span class="arrow-r yellow">←</span><div class="bubble b-warn">구매/계약 프로세스 관련 질문을 입력해 주세요. 다른 도움이 필요하시면 담당 부서에 문의해 주세요.</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 엣지 2: 매우 긴 입력 -->
-    <div class="card">
-      <h4><span class="tag tag-warn">EDGE</span> 매우 긴 입력 (토큰 초과)</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">직원</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">5000자 이상의 긴 텍스트 입력</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Bedrock</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">ValidationException: Input too long<br>(context window 초과)</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">except Exception as e → 500 반환</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">해결</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r green">→</span><div class="bubble b-ok">입력 길이 제한 추가 권장<br>UI에서 maxlength 설정</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 엣지 3: S3 파일 없음 -->
-    <div class="card">
-      <h4><span class="tag tag-warn">EDGE</span> S3 manuals/ 폴더 비어있음</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">list_objects_v2 → Contents: []</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-warn">_doc_cache = "등록된 문서가 없습니다."</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">봇</div>
-          <div class="sf-line warn-line"></div>
-          <div class="sf-msg"><span class="arrow-r yellow">←</span><div class="bubble b-warn">현재 등록된 매뉴얼이 없습니다.<br>담당자에게 문서 업로드를 요청해 주세요.</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">HTTP</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="tag tag-ok">200</span><span style="font-size:11px;color:#8b949e">서비스 중단 없음</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 엣지 4: Teams Activity type != message -->
-    <div class="card">
-      <h4><span class="tag tag-warn">EDGE</span> Teams conversationUpdate 이벤트</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">Azure Bot</div>
-          <div class="sf-line teams-line"></div>
-          <div class="sf-msg"><span class="arrow-r blue">→</span><div class="bubble b-info">{ type: "conversationUpdate" }<br>(봇이 채널에 추가될 때 자동 발생)</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">activity.get("type") != "message"<br>→ 즉시 200 반환 (무시)</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">HTTP</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="tag tag-ok">200</span><span style="font-size:11px;color:#8b949e">빈 응답 (정상 처리)</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 엣지 5: 동시 요청 (캐시 경쟁) -->
-    <div class="card">
-      <h4><span class="tag tag-warn">EDGE</span> 동시 요청 (콜드스타트 경쟁)</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">직원 A</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">동시에 질문 전송</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">직원 B</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">동시에 질문 전송</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Lambda</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-warn">각각 별도 컨테이너 → 각자 S3 파싱<br>(Lambda 동시 실행 특성)</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">결과</div>
-          <div class="sf-line ok-line"></div>
-          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">각 컨테이너 독립 캐시 → 정상 동작<br>이후 웜스타트 시 각자 캐시 재사용</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 엣지 6: 한국어 외 입력 -->
-    <div class="card">
-      <h4><span class="tag tag-warn">EDGE</span> 영어 / 혼용 입력</h4>
-      <div class="sf">
-        <div class="sf-row">
-          <div class="sf-actor">직원</div>
-          <div class="sf-line active-line"></div>
-          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"How to create a purchase order?"</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">Bedrock</div>
-          <div class="sf-line"></div>
-          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">system: "답변은 한국어로 작성하세요"</div></div>
-        </div>
-        <div class="sf-row">
-          <div class="sf-actor">봇</div>
-          <div class="sf-line ok-line"></div>
-          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">구매요청서 작성 절차를 안내해 드릴게요...<br>(한국어로 답변)</div></div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- P4: 의사결정 트리 -->
-<div id="p4" class="panel">
-  <div class="sec">Lambda 요청 처리 의사결정 트리</div>
-  <div class="g2">
-
-    <div class="card">
-      <h4>📥 요청 수신 분기</h4>
-      <div class="dt">
-        <div class="dt-node" style="background:#161b22;border:1px solid #30363d">
-          <div class="dt-icon">📨</div>
-          <div class="dt-body"><h5>요청 수신</h5><p>event.httpMethod 확인</p></div>
-        </div>
-        <div class="indent">
-          <div class="dt-node" style="background:#0d1f2d;border:1px solid #0078d4;margin-bottom:6px">
-            <div class="dt-icon">🔀</div>
-            <div class="dt-body"><h5>OPTIONS → CORS preflight</h5><p>즉시 200 반환 (헤더만)</p></div>
-          </div>
-          <div class="dt-node" style="background:#1f1500;border:1px solid #f0ad00;margin-bottom:6px">
-            <div class="dt-icon">🔀</div>
-            <div class="dt-body"><h5>path == "/teams"</h5><p><code>handle_teams(activity)</code> 호출</p></div>
-          </div>
-          <div class="dt-node" style="background:#0d1f0d;border:1px solid #22c55e">
-            <div class="dt-icon">🔀</div>
-            <div class="dt-body"><h5>path == "/chat"</h5><p>messages 검증 → <code>ask_claude()</code></p></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h4>🤖 Bedrock 호출 전 검증</h4>
-      <div class="dt">
-        <div class="dt-node" style="background:#161b22;border:1px solid #30363d">
-          <div class="dt-icon">🔍</div>
-          <div class="dt-body"><h5>messages 배열 확인</h5></div>
-        </div>
-        <div class="indent">
-          <div class="dt-node" style="background:#1f0d0d;border:1px solid #e60012;margin-bottom:6px">
-            <div class="dt-icon">❌</div>
-            <div class="dt-body"><h5>비어있음 → 400</h5><p><code>{ "error": "messages required" }</code></p></div>
-          </div>
-          <div class="dt-node" style="background:#0d1f0d;border:1px solid #22c55e">
-            <div class="dt-icon">✅</div>
-            <div class="dt-body"><h5>있음 → get_docs() 호출</h5></div>
-          </div>
-        </div>
-        <div class="dt-node" style="background:#161b22;border:1px solid #30363d;margin-top:8px">
-          <div class="dt-icon">🗄️</div>
-          <div class="dt-body"><h5>_doc_cache 확인</h5></div>
-        </div>
-        <div class="indent">
-          <div class="dt-node" style="background:#1f1500;border:1px solid #f0ad00;margin-bottom:6px">
-            <div class="dt-icon">❄️</div>
-            <div class="dt-body"><h5>None → S3 파싱</h5><p>list_objects → get_object → _parse() → 캐싱</p></div>
-          </div>
-          <div class="dt-node" style="background:#0d1f0d;border:1px solid #22c55e">
-            <div class="dt-icon">🔥</div>
-            <div class="dt-body"><h5>있음 → 즉시 반환</h5></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h4>📄 파일 파싱 분기</h4>
-      <div class="dt">
-        <div class="dt-node" style="background:#161b22;border:1px solid #30363d">
-          <div class="dt-icon">📂</div>
-          <div class="dt-body"><h5>파일 확장자 확인</h5></div>
-        </div>
-        <div class="indent">
-          <div class="dt-node" style="background:#0d1f2d;border:1px solid #0078d4;margin-bottom:6px">
-            <div class="dt-icon">📄</div>
-            <div class="dt-body"><h5>.pdf → pypdf</h5><p>PdfReader → 페이지별 extract_text()</p></div>
-          </div>
-          <div class="dt-node" style="background:#1a0d2e;border:1px solid #a855f7;margin-bottom:6px">
-            <div class="dt-icon">📊</div>
-            <div class="dt-body"><h5>.pptx/.ppt → python-pptx</h5><p>Presentation → 슬라이드별 shape.text</p></div>
-          </div>
-          <div class="dt-node" style="background:#1f0d0d;border:1px solid #e60012">
-            <div class="dt-icon">❌</div>
-            <div class="dt-body"><h5>기타 → ValueError</h5><p>except: "[파일명 파싱 실패]" 기록 후 계속</p></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h4>💬 Teams Activity 분기</h4>
-      <div class="dt">
-        <div class="dt-node" style="background:#161b22;border:1px solid #30363d">
-          <div class="dt-icon">📨</div>
-          <div class="dt-body"><h5>activity.type 확인</h5></div>
-        </div>
-        <div class="indent">
-          <div class="dt-node" style="background:#0d1f0d;border:1px solid #22c55e;margin-bottom:6px">
-            <div class="dt-icon">✅</div>
-            <div class="dt-body"><h5>"message" → 처리</h5><p>activity.text → ask_claude() → reply activity</p></div>
-          </div>
-          <div class="dt-node" style="background:#161b22;border:1px solid #30363d;margin-bottom:6px">
-            <div class="dt-icon">⏭</div>
-            <div class="dt-body"><h5>기타 → 무시</h5><p>conversationUpdate 등 → 200 빈 응답</p></div>
-          </div>
-        </div>
-        <div class="dt-node" style="background:#161b22;border:1px solid #30363d;margin-top:8px">
-          <div class="dt-icon">📝</div>
-          <div class="dt-body"><h5>activity.text 확인</h5></div>
-        </div>
-        <div class="indent">
-          <div class="dt-node" style="background:#1f0d0d;border:1px solid #e60012;margin-bottom:6px">
-            <div class="dt-icon">❌</div>
-            <div class="dt-body"><h5>비어있음 → 200 빈 응답</h5></div>
-          </div>
-          <div class="dt-node" style="background:#0d1f0d;border:1px solid #22c55e">
-            <div class="dt-icon">✅</div>
-            <div class="dt-body"><h5>있음 → Bedrock 호출</h5></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip"></div>
 
 <script>
-function T(id,btn){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
 }
+
+// Tooltip
+const tooltip = document.getElementById('tooltip');
+document.querySelectorAll('[data-tip]').forEach(el => {
+  el.addEventListener('mousemove', e => {
+    tooltip.textContent = el.dataset.tip;
+    tooltip.classList.add('show');
+    tooltip.style.left = (e.clientX + 14) + 'px';
+    tooltip.style.top  = (e.clientY + 14) + 'px';
+  });
+  el.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
+});
+
+// Animate timing bars on tab switch
+document.querySelector('[onclick="showTab(\'normal\')"]').addEventListener('click', () => {
+  document.querySelectorAll('.timing-bar').forEach(b => {
+    const w = b.style.width; b.style.width = '0';
+    setTimeout(() => b.style.width = w, 50);
+  });
+});
 </script>
 </body>
 </html>
