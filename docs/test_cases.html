@@ -50,21 +50,23 @@ header p{font-size:11px;color:#8b949e;margin-top:3px}
     <p>API 기능 테스트 · 에러 처리 · 엣지 케이스 · 통합 테스트</p>
   </div>
   <div class="stats">
-    <div class="stat"><div class="n" style="color:#56d364">14</div><div class="l">정상</div></div>
+    <div class="stat"><div class="n" style="color:#56d364">25</div><div class="l">정상</div></div>
     <div class="stat"><div class="n" style="color:#ff7b72">8</div><div class="l">에러</div></div>
     <div class="stat"><div class="n" style="color:#e3b341">6</div><div class="l">엣지</div></div>
-    <div class="stat"><div class="n" style="color:#79c0ff">28</div><div class="l">전체</div></div>
+    <div class="stat"><div class="n" style="color:#d2a8ff">13</div><div class="l">알림</div></div>
+    <div class="stat"><div class="n" style="color:#79c0ff">52</div><div class="l">전체</div></div>
   </div>
 </header>
 <div class="tabs">
-  <button class="tab active" onclick="T('p1',this)">✅ 정상 케이스 (14)</button>
+  <button class="tab active" onclick="T('p1',this)">✅ 프로세스 안내 (25)</button>
   <button class="tab" onclick="T('p2',this)">❌ 에러 케이스 (8)</button>
   <button class="tab" onclick="T('p3',this)">⚠️ 엣지 케이스 (6)</button>
+  <button class="tab" onclick="T('p4',this)">🔔 알림 기능 (13)</button>
 </div>
 
 <!-- P1: 정상 케이스 -->
 <div id="p1" class="panel active">
-  <div class="sec">정상 케이스 — /chat 엔드포인트</div>
+  <div class="sec">정상 케이스 — /chat 엔드포인트 (프로세스 안내)</div>
 
 
   <!-- TC-001 -->
@@ -250,6 +252,196 @@ header p{font-size:11px;color:#8b949e;margin-top:3px}
     <div class="tc-body">
       <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"구매요청서 양식 어디서 받아?"</span> }] }</div></div></div>
       <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200, reply에 "Coupa" 또는 "구매팀" 언급</div></div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="sec" style="margin-top:16px">On-Budget / Off-Budget 결재 라인</div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-015</span>
+      <span class="tc-title">On-Budget 500만원 결재 라인</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"On-Budget 500만원 구매 결재 라인 알려줘"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>reply에 "팀장 → 본부장" 포함</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-016</span>
+      <span class="tc-title">On-Budget 2000만원 결재 라인 — 구매거래위원회</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"On-Budget 2000만원 구매 결재 라인 알려줘"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>reply에 "팀장 → 본부장 → 구매거래위원회" 포함</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-017</span>
+      <span class="tc-title">Off-Budget 100만원 결재 라인</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Off-Budget 100만원 결재 라인 알려줘"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>reply에 "팀장 → 본부장" 포함</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-018</span>
+      <span class="tc-title">Off-Budget 500만원 결재 라인 — CFO</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Off-Budget 500만원 결재 라인 알려줘"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>reply에 "팀장 → 본부장 → CFO" 포함</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-019</span>
+      <span class="tc-title">Off-Budget 5000만원 결재 라인 — CEO</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Off-Budget 5000만원 결재 라인 알려줘"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>reply에 "팀장 → 본부장 → CFO → CEO" 포함</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-020</span>
+      <span class="tc-title">Off-Budget 2억 결재 라인 — Global CFO</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Off-Budget 2억짜리 구매는 누구한테 결재 받아?"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>reply에 "팀장 → 본부장 → CFO → CEO → Global CFO" 포함</div></div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="sec" style="margin-top:16px">Coupa 프로세스 상세</div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-021</span>
+      <span class="tc-title">유지보수 계약 견적서 첨부 안내</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"유지보수 계약 시 어떤 견적서 첨부해야 해?"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>reply에 "유지보수 견적서" 포함</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-022</span>
+      <span class="tc-title">신규 장비 구매 견적서 첨부 안내</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"신규 장비 구매 시 어떤 견적서 첨부해야 해?"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>reply에 "단가 견적서" 포함</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-023</span>
+      <span class="tc-title">Coupa 작성 후 다음 단계</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Coupa 작성 후 다음 단계가 뭐야?"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>reply에 "법무팀 계약서", "인감사용 신청", "날인" 포함</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-024</span>
+      <span class="tc-title">인감사용 신청 위치</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"인감사용 신청은 어디서 해?"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>reply에 "전자결재시스템" 포함</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-025</span>
+      <span class="tc-title">경비 처리 방법</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"경비 처리는 어떻게 해?"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>reply에 "Concur" 또는 "경비 보고서" 포함</div></div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="sec" style="margin-top:16px">Coupa 데이터 조회 & PO</div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-026</span>
+      <span class="tc-title">계약 번호로 만료일 조회</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"123번 계약 만료일이 언제야?"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>계약명, 상태, 만료일, 담당자, 공급업체 정보 반환</div></div></div>
+      <div class="row"><div class="k">전제 조건</div><div>Coupa API 연동 완료 (실제 API 키 필요)</div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-027</span>
+      <span class="tc-title">업체명으로 계약 검색</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"ABC Corp 계약 찾아줘"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>유사 계약 목록 + Coupa 참고 안내</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-028</span>
+      <span class="tc-title">PO 발행 여부 조회</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"123번 계약 PO 발행됐어?"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>PO 번호, 상태(issued/draft), 발주일, 금액 반환</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-029</span>
+      <span class="tc-title">Coupa URL 전송 → 계약 분석</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"https://company.coupahost.com/contracts/123"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">HTTP 200<br>만료일 임박 여부, 결재 라인 적정성, 주의사항, 다음 액션 추천</div></div></div>
     </div>
   </div>
 </div>
@@ -441,6 +633,173 @@ Body: <span class="str">"invalid json {"</span></div></div></div>
       <div class="row"><div class="k">검증</div><div>CloudWatch Logs에서 "S3 파싱" 로그 1회만 확인</div></div>
     </div>
   </div>
+</div>
+
+<!-- P4: 알림 기능 -->
+<div id="p4" class="panel">
+
+  <div class="sec">계약 만료 D-60 알림 (자동 스케줄)</div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N01</span>
+      <span class="tc-title">만료 60일 이내 계약 → 알림 발송</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">전제 조건</div><div>만료일이 오늘 기준 60일 이내인 active 계약 존재</div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">매일 오전 9시 담당자 Teams 채널로 Adaptive Card 알림 발송</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N02</span>
+      <span class="tc-title">만료 61일 이상 계약 → 알림 미발송</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">전제 조건</div><div>만료일이 61일 이상 남은 계약</div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">알림 미발송 (조건 미충족)</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N03</span>
+      <span class="tc-title">담당자 이메일 매핑 없음 → fallback</span>
+      <span class="badge warn">WARN</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">전제 조건</div><div>DynamoDB에 담당자 이메일 매핑 없음</div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect-warn">default webhook URL로 fallback 발송<br>서비스 중단 없이 처리</div></div></div>
+    </div>
+  </div>
+
+  <div class="sec" style="margin-top:20px">계약 상태변경 알림 (Coupa Webhook)</div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N04</span>
+      <span class="tc-title">계약 approved → ✅ 승인 알림</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">시나리오</div><div>Coupa에서 계약 approved 이벤트 발생</div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">담당자 채널로 "✅ 계약 최종 승인" 알림 발송</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N05</span>
+      <span class="tc-title">계약 rejected → ❌ 거절 알림</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">시나리오</div><div>Coupa에서 계약 rejected 이벤트 발생</div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">담당자 채널로 "❌ 계약 거절" 알림 발송</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N06</span>
+      <span class="tc-title">계약 cancelled → 🚫 반려 알림</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">시나리오</div><div>Coupa에서 계약 cancelled 이벤트 발생</div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">담당자 채널로 "🚫 계약 반려" 알림 발송</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N07</span>
+      <span class="tc-title">계약 draft 상태 → 알림 미발송</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">시나리오</div><div>Coupa에서 계약 draft 상태 webhook 수신</div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">알림 미발송 (NOTIFY_STATUSES 제외 상태)</div></div></div>
+    </div>
+  </div>
+
+  <div class="sec" style="margin-top:20px">단계별 승인 알림 (Coupa Approval Webhook)</div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N08</span>
+      <span class="tc-title">1차 승인자(팀장) 승인 완료 알림</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">시나리오</div><div>1차 승인자(팀장) 승인 완료 이벤트</div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">"✅ 1차 승인 완료" Teams 알림 발송</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N09</span>
+      <span class="tc-title">2차 승인자(본부장) 승인 완료 알림</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">시나리오</div><div>2차 승인자(본부장) 승인 완료 이벤트</div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">"✅ 2차 승인 완료" Teams 알림 발송</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N10</span>
+      <span class="tc-title">승인자 반려 알림</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">시나리오</div><div>승인자가 반려 처리</div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">"❌ 반려 — N차 승인" Teams 알림 발송</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N11</span>
+      <span class="tc-title">pending_approval 상태 → 알림 미발송</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">시나리오</div><div>pending_approval 상태 webhook 수신</div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect">알림 미발송 (NOTIFY_APPROVAL_STATUSES 제외)</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N12</span>
+      <span class="tc-title">PO 번호 없이 발주 조회 → 안내</span>
+      <span class="badge warn">WARN</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"PO 발행됐어?"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect-warn">HTTP 200<br>reply에 "계약 번호를 함께 알려달라"는 안내 포함</div></div></div>
+    </div>
+  </div>
+
+  <div class="tc">
+    <div class="tc-head" onclick="toggle(this)">
+      <span class="tc-id">TC-N13</span>
+      <span class="tc-title">존재하지 않는 계약 번호 조회</span>
+      <span class="badge warn">WARN</span>
+    </div>
+    <div class="tc-body">
+      <div class="row"><div class="k">입력</div><div><div class="code">{ <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"존재하지 않는 999999번 계약 알려줘"</span> }] }</div></div></div>
+      <div class="row"><div class="k">기대 결과</div><div><div class="expect-warn">HTTP 200<br>reply에 "계약 정보를 찾을 수 없다"는 안내 포함</div></div></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
