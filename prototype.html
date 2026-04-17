@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coupa AI Facilitator</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;height:100vh;display:flex;flex-direction:column}
+
+/* Header */
+.header{background:#4f46e5;color:#fff;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 8px rgba(79,70,229,.3)}
+.header-left{display:flex;align-items:center;gap:12px}
+.avatar{width:36px;height:36px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px}
+.header-info h1{font-size:15px;font-weight:600}
+.header-info p{font-size:11px;opacity:.8}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;display:inline-block;margin-right:4px}
+.header-right{display:flex;gap:8px}
+.hbtn{background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;transition:.2s}
+.hbtn:hover{background:rgba(255,255,255,.25)}
+
+/* Layout */
+.main{display:flex;flex:1;overflow:hidden}
+
+/* Sidebar */
+.sidebar{width:260px;background:#fff;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-header{padding:16px;border-bottom:1px solid #f3f4f6;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px}
+.sidebar-section{padding:8px}
+.sidebar-label{font-size:11px;color:#9ca3af;padding:8px 8px 4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.quick-btn{display:block;width:100%;text-align:left;background:none;border:none;padding:8px 10px;border-radius:6px;font-size:13px;color:#374151;cursor:pointer;transition:.15s;line-height:1.4}
+.quick-btn:hover{background:#f3f4f6;color:#4f46e5}
+.quick-btn .icon{margin-right:6px}
+.divider-line{height:1px;background:#f3f4f6;margin:8px}
+.sidebar-footer{margin-top:auto;padding:12px;border-top:1px solid #f3f4f6}
+.sidebar-footer p{font-size:11px;color:#9ca3af;line-height:1.6}
+
+/* Chat area */
+.chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.messages{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px}
+.messages::-webkit-scrollbar{width:4px}
+.messages::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px}
+
+/* Messages */
+.msg-row{display:flex;gap:10px;align-items:flex-start}
+.msg-row.user{flex-direction:row-reverse}
+.msg-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.msg-avatar.bot{background:#4f46e5;color:#fff}
+.msg-avatar.user{background:#e5e7eb;color:#374151}
+.msg-content{max-width:72%}
+.msg-name{font-size:11px;color:#9ca3af;margin-bottom:4px}
+.msg-row.user .msg-name{text-align:right}
+.bubble{padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.6;word-break:break-word}
+.bubble.bot{background:#fff;color:#111827;border:1px solid #e5e7eb;border-top-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.bubble.user{background:#4f46e5;color:#fff;border-top-right-radius:4px}
+.bubble.bot h1,.bubble.bot h2,.bubble.bot h3{font-size:14px;margin:6px 0 3px;color:#111827}
+.bubble.bot ul,.bubble.bot ol{padding-left:18px;margin:4px 0}
+.bubble.bot code{background:#f3f4f6;padding:1px 5px;border-radius:3px;font-size:12px}
+.bubble.bot pre{background:#f3f4f6;padding:10px;border-radius:6px;overflow-x:auto;margin:6px 0;font-size:12px}
+.bubble.bot table{border-collapse:collapse;width:100%;margin:6px 0;font-size:12px}
+.bubble.bot th,.bubble.bot td{border:1px solid #e5e7eb;padding:5px 8px}
+.bubble.bot th{background:#f9fafb;font-weight:600}
+.bubble.bot strong{font-weight:600}
+.msg-time{font-size:10px;color:#d1d5db;margin-top:4px}
+.msg-row.user .msg-time{text-align:right}
+
+/* Typing */
+.typing-dots{display:flex;gap:4px;padding:12px 14px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;border-top-left-radius:4px;width:fit-content}
+.typing-dots span{width:7px;height:7px;border-radius:50%;background:#9ca3af;animation:bounce .8s infinite}
+.typing-dots span:nth-child(2){animation-delay:.15s}
+.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+/* Sources */
+.sources{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px}
+.source-tag{background:#ede9fe;color:#6d28d9;font-size:10px;padding:2px 8px;border-radius:10px}
+
+/* Input */
+.input-area{padding:16px 24px;background:#fff;border-top:1px solid #e5e7eb;flex-shrink:0}
+.input-wrap{display:flex;gap:8px;align-items:flex-end;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;padding:8px 12px;transition:.2s}
+.input-wrap:focus-within{border-color:#4f46e5;background:#fff}
+textarea{flex:1;border:none;background:none;outline:none;font-size:14px;font-family:inherit;resize:none;max-height:120px;line-height:1.5;color:#111827}
+textarea::placeholder{color:#9ca3af}
+.send-btn{width:36px;height:36px;border:none;background:#4f46e5;color:#fff;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0}
+.send-btn:hover{background:#4338ca}
+.send-btn:disabled{background:#e5e7eb;cursor:not-allowed}
+.input-hint{font-size:11px;color:#9ca3af;margin-top:6px;text-align:center}
+
+/* Welcome */
+.welcome{text-align:center;padding:40px 20px;color:#6b7280}
+.welcome .logo{font-size:48px;margin-bottom:16px}
+.welcome h2{font-size:20px;font-weight:600;color:#111827;margin-bottom:8px}
+.welcome p{font-size:14px;line-height:1.6;margin-bottom:24px}
+.welcome-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:7px 16px;font-size:13px;color:#374151;cursor:pointer;transition:.2s}
+.chip:hover{border-color:#4f46e5;color:#4f46e5;background:#ede9fe}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <div class="avatar">🛒</div>
+    <div class="header-info">
+      <h1>Coupa AI Facilitator</h1>
+      <p><span class="status-dot"></span>온라인 · 구매/계약 프로세스 AI 어시스턴트</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="hbtn" onclick="clearChat()">🗑 대화 초기화</button>
+    <button class="hbtn" onclick="toggleSidebar()">☰ 메뉴</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">빠른 질문</div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">구매 프로세스</div>
+      <button class="quick-btn" onclick="ask('On-Budget 500만원 구매 결재 라인 알려줘')"><span class="icon">💰</span>On-Budget 결재 라인</button>
+      <button class="quick-btn" onclick="ask('Off-Budget 500만원 결재 라인 알려줘')"><span class="icon">📋</span>Off-Budget 결재 라인</button>
+      <button class="quick-btn" onclick="ask('구매 요청은 어떻게 해?')"><span class="icon">🛒</span>구매 요청 방법</button>
+      <button class="quick-btn" onclick="ask('경비 처리는 어떻게 해?')"><span class="icon">🧾</span>경비 처리 (Concur)</button>
+      <div class="divider-line"></div>
+      <div class="sidebar-label">계약 관리</div>
+      <button class="quick-btn" onclick="ask('계약 체결 절차 알려줘')"><span class="icon">📄</span>계약 체결 절차</button>
+      <button class="quick-btn" onclick="ask('계약 연장 프로세스가 어떻게 돼?')"><span class="icon">🔄</span>계약 연장 프로세스</button>
+      <button class="quick-btn" onclick="ask('인감사용 신청은 어디서 해?')"><span class="icon">🔏</span>인감사용 신청</button>
+      <div class="divider-line"></div>
+      <div class="sidebar-label">Coupa 시스템</div>
+      <button class="quick-btn" onclick="ask('Coupa 작성 후 다음 단계가 뭐야?')"><span class="icon">➡️</span>Coupa 다음 단계</button>
+      <button class="quick-btn" onclick="ask('어떤 견적서를 첨부해야 해?')"><span class="icon">📎</span>견적서 종류</button>
+    </div>
+    <div class="sidebar-footer">
+      <p>📚 Coupa, eProcurement, CSP 매뉴얼 기반<br>🤖 Amazon Bedrock Claude 구동</p>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div class="chat-area">
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="logo">🛒</div>
+        <h2>Coupa AI Facilitator</h2>
+        <p>구매 요청, 계약 관리, 결재 라인 등<br>Coupa 관련 모든 질문에 답변해드립니다.</p>
+        <div class="welcome-chips">
+          <div class="chip" onclick="ask('On-Budget 500만원 결재 라인 알려줘')">💰 결재 라인 확인</div>
+          <div class="chip" onclick="ask('계약 체결 절차 알려줘')">📄 계약 체결 절차</div>
+          <div class="chip" onclick="ask('경비 처리는 어떻게 해?')">🧾 경비 처리</div>
+          <div class="chip" onclick="ask('구매 요청은 어떻게 해?')">🛒 구매 요청 방법</div>
+          <div class="chip" onclick="ask('Off-Budget 1000만원 결재 라인 알려줘')">📋 Off-Budget 결재</div>
+          <div class="chip" onclick="ask('인감사용 신청은 어디서 해?')">🔏 인감사용 신청</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-wrap">
+        <textarea id="input" placeholder="구매/계약 관련 질문을 입력하세요..." rows="1"
+          oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="send()">➤</button>
+      </div>
+      <div class="input-hint">Enter로 전송 · Shift+Enter로 줄바꿈</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API = 'https://bfmyt5l44m.execute-api.us-east-1.amazonaws.com/Prod';
+const UID = localStorage.getItem('uid') || (() => { const id='u-'+Math.random().toString(36).slice(2,9); localStorage.setItem('uid',id); return id; })();
+const msgs = document.getElementById('messages');
+const input = document.getElementById('input');
+const sendBtn = document.getElementById('sendBtn');
+
+function now() {
+  return new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function addMsg(text, role, isMarkdown=false) {
+  document.getElementById('welcome')?.remove();
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + role;
+  const av = `<div class="msg-avatar ${role}">${role==='bot'?'🛒':'👤'}</div>`;
+  const name = role==='bot'?'Coupa AI':'나';
+  const content = isMarkdown && typeof marked!=='undefined' ? marked.parse(text) : text.replace(/\n/g,'<br>');
+  row.innerHTML = `${av}<div class="msg-content"><div class="msg-name">${name}</div><div class="bubble ${role}">${content}</div><div class="msg-time">${now()}</div></div>`;
+  if(role==='user') row.querySelector('.msg-content').style.alignItems='flex-end';
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+  return row;
+}
+
+function addTyping() {
+  document.getElementById('welcome')?.remove();
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  row.id = 'typing';
+  row.innerHTML = `<div class="msg-avatar bot">🛒</div><div class="msg-content"><div class="msg-name">Coupa AI</div><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function send() {
+  const text = input.value.trim();
+  if (!text || sendBtn.disabled) return;
+  input.value = ''; input.style.height = 'auto';
+  addMsg(text, 'user');
+  sendBtn.disabled = true;
+  addTyping();
+  try {
+    const res = await fetch(API+'/chat', {
+      method:'POST', headers:{'Content-Type':'application/json; charset=utf-8'},
+      body: JSON.stringify({message:text, user_id:UID})
+    });
+    const data = await res.json();
+    document.getElementById('typing')?.remove();
+    const row = addMsg(data.answer||'답변을 가져올 수 없습니다.', 'bot', true);
+    if (data.sources?.length) {
+      const s = document.createElement('div');
+      s.className = 'sources';
+      data.sources.slice(0,2).forEach(src => {
+        const t = document.createElement('span');
+        t.className = 'source-tag';
+        t.textContent = '📎 ' + src.slice(0,40) + '...';
+        s.appendChild(t);
+      });
+      row.querySelector('.bubble').appendChild(s);
+    }
+  } catch(e) {
+    document.getElementById('typing')?.remove();
+    addMsg('⚠️ 연결 오류: ' + e.message, 'bot');
+  }
+  sendBtn.disabled = false;
+  input.focus();
+}
+
+function ask(q) { input.value = q; send(); }
+
+function clearChat() {
+  msgs.innerHTML = '';
+  msgs.innerHTML = `<div class="welcome" id="welcome"><div class="logo">🛒</div><h2>Coupa AI Facilitator</h2><p>구매 요청, 계약 관리, 결재 라인 등<br>Coupa 관련 모든 질문에 답변해드립니다.</p><div class="welcome-chips"><div class="chip" onclick="ask('On-Budget 500만원 결재 라인 알려줘')">💰 결재 라인 확인</div><div class="chip" onclick="ask('계약 체결 절차 알려줘')">📄 계약 체결 절차</div><div class="chip" onclick="ask('경비 처리는 어떻게 해?')">🧾 경비 처리</div><div class="chip" onclick="ask('구매 요청은 어떻게 해?')">🛒 구매 요청 방법</div></div></div>`;
+}
+
+function toggleSidebar() {
+  const s = document.getElementById('sidebar');
+  s.style.display = s.style.display==='none' ? '' : 'none';
+}
+</script>
+</body>
+</html>
