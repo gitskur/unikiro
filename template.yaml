@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 30
+    Environment:
+      Variables:
+        AWS_REGION: !Ref AWS::Region
+        BEDROCK_MODEL_ID: anthropic.claude-3-5-sonnet-20241022-v2:0
+        COUPA_BASE_URL: !Sub "{{resolve:ssm:/coupa/base_url}}"
+        COUPA_API_KEY: !Sub "{{resolve:ssm:/coupa/api_key}}"
+        TEAMS_DEFAULT_WEBHOOK_URL: !Sub "{{resolve:ssm:/teams/default_webhook_url}}"
+        TEAMS_BOT_APP_ID: !Sub "{{resolve:ssm:/teams/bot_app_id}}"
+        TEAMS_BOT_APP_PASSWORD: !Sub "{{resolve:ssm:/teams/bot_app_password}}"
+
+Resources:
+  # DynamoDB: 담당자 이메일 → Teams 채널 webhook 매핑
+  ChannelMappingTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ChannelMapping
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+
+  # Lambda 1: Teams Bot Handler
+  TeamsBotFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: chatbot/
+      Handler: lambda_bot.handler.handler
+      Policies:
+        - AmazonBedrockFullAccess
+        - DynamoDBReadPolicy:
+            TableName: !Ref ChannelMappingTable
+      Events:
+        BotApi:
+          Type: Api
+          Properties:
+            Path: /bot/messages
+            Method: POST
+
+  # Lambda 2: 계약 만료 스케줄러 (매일 오전 9시 KST = 00:00 UTC)
+  ContractSchedulerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: chatbot/
+      Handler: lambda_scheduler.handler.handler
+      Timeout: 60
+      Policies:
+        - AmazonBedrockFullAccess
+        - DynamoDBReadPolicy:
+            TableName: !Ref ChannelMappingTable
+      Events:
+        DailySchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 * * ? *)
+            Name: ContractExpiryCheck
+            Enabled: true
+
+  # Lambda 3: Coupa Webhook 수신
+  CoupaWebhookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: chatbot/
+      Handler: lambda_webhook.handler.handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ChannelMappingTable
+      Events:
+        WebhookApi:
+          Type: Api
+          Properties:
+            Path: /coupa/webhook
+            Method: POST
+        ApprovalWebhookApi:
+          Type: Api
+          Properties:
+            Path: /coupa/approval-webhook
+            Method: POST
+
+Outputs:
+  BotEndpoint:
+    Description: "Teams Bot 메시지 수신 URL (Azure Bot Channel에 등록)"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/bot/messages"
+
+  WebhookEndpoint:
+    Description: "Coupa 계약 상태변경 Webhook 등록 URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/coupa/webhook"
+
+  ApprovalWebhookEndpoint:
+    Description: "Coupa 단계별 승인 Webhook 등록 URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/coupa/approval-webhook"

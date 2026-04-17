@@ -1,0 +1,46 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.16",
+  "version": "1.0.0",
+  "id": "<TEAMS_BOT_APP_ID>",
+  "packageName": "com.company.coupa-teams-bot",
+  "developer": {
+    "name": "Your Company",
+    "websiteUrl": "https://your-company.com",
+    "privacyUrl": "https://your-company.com/privacy",
+    "termsOfUseUrl": "https://your-company.com/terms"
+  },
+  "name": {
+    "short": "Coupa 도우미",
+    "full": "Coupa 구매/비용처리 안내 봇"
+  },
+  "description": {
+    "short": "Coupa 계약·구매 질의응답 및 알림",
+    "full": "Coupa 계약 조회, 구매 프로세스 안내, 계약 만료 및 상태변경 알림을 제공합니다."
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "accentColor": "#1F3964",
+  "bots": [
+    {
+      "botId": "<TEAMS_BOT_APP_ID>",
+      "scopes": ["personal", "team", "groupchat"],
+      "supportsFiles": false,
+      "isNotificationOnly": false,
+      "commandLists": [
+        {
+          "scopes": ["personal", "team"],
+          "commands": [
+            { "title": "계약 조회",   "description": "계약 번호로 계약 정보를 조회합니다. 예: 123번 계약 알려줘" },
+            { "title": "만료 예정",   "description": "60일 이내 만료 예정 계약을 조회합니다." },
+            { "title": "도움말",      "description": "사용 가능한 명령어를 안내합니다." }
+          ]
+        }
+      ]
+    }
+  ],
+  "permissions": ["identity", "messageTeamMembers"],
+  "validDomains": []
+}
