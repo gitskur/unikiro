@@ -150,9 +150,10 @@ function addMsg(text, type) {
   return d;
 }
 
-const replies = ['네, 알겠습니다!', '좀 더 자세히 알려주시겠어요?', '확인해볼게요.', '다른 궁금한 점이 있으신가요?'];
+const API_URL = 'https://bfmyt5l44m.execute-api.us-east-1.amazonaws.com/Prod';
+const USER_ID = localStorage.getItem('chatbot_uid') || (() => { const id = 'user-' + Math.random().toString(36).slice(2, 10); localStorage.setItem('chatbot_uid', id); return id; })();
 
-function handleSend() {
+async function handleSend() {
   const text = input.value.trim();
   if (!text) return;
   addMsg(text, 'user');
@@ -162,10 +163,19 @@ function handleSend() {
   t.innerHTML = '<div class="cw-typing"><span></span><span></span><span></span></div>';
   msgs.appendChild(t);
   msgs.scrollTop = msgs.scrollHeight;
-  setTimeout(() => {
+  try {
+    const res = await fetch(API_URL + '/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({message: text, user_id: USER_ID})
+    });
+    const data = await res.json();
     t.remove();
-    addMsg(replies[Math.floor(Math.random() * replies.length)], 'bot');
-  }, 800 + Math.random() * 500);
+    addMsg(data.answer || '답변을 가져올 수 없습니다.', 'bot');
+  } catch(e) {
+    t.remove();
+    addMsg('⚠️ 오류가 발생했습니다: ' + e.message, 'bot');
+  }
 }
 
 sendBtn.addEventListener('click', handleSend);

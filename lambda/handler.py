@@ -62,11 +62,10 @@ def ask_bedrock(query, context, history):
     resp = bedrock.invoke_model(
         modelId=MODEL_ID,
         body=json.dumps({
-            "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": 1024,
-            "messages": [{"role": "user", "content": prompt}]
+            "messages": [{"role": "user", "content": [{"text": prompt}]}]
         }))
-    return json.loads(resp['body'].read())['content'][0]['text']
+    result = json.loads(resp['body'].read())
+    return result['output']['message']['content'][0]['text']
 
 
 def get_history(user_id, limit=3):
