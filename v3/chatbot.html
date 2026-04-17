@@ -10,7 +10,11 @@
 body{font-family:'Segoe UI',sans-serif;background:#f8f9fa}
 
 /* ── 위젯 모드 (기본) ── */
-#cb-float{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;align-items:center;gap:10px}
+#cb-float{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;align-items:center;gap:10px;cursor:grab;user-select:none;transition:opacity .3s}
+#cb-float.dragging{cursor:grabbing}
+#cb-float.hidden{opacity:0;pointer-events:none}
+#cb-restore{position:fixed;bottom:24px;right:24px;z-index:9998;background:#4f46e5;color:#fff;border:none;padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;box-shadow:0 2px 12px rgba(79,70,229,.3);display:none}
+#cb-restore:hover{background:#4338ca}
 #cb-bubble{background:#fff;padding:10px 16px;border-radius:20px;box-shadow:0 2px 12px rgba(0,0,0,.12);font-size:14px;animation:fadeUp .5s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 #cb-toggle{width:56px;height:56px;border-radius:50%;background:#4f46e5;color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 16px rgba(79,70,229,.4);transition:transform .2s}
@@ -64,6 +68,8 @@ body{font-family:'Segoe UI',sans-serif;background:#f8f9fa}
 </div>
 
 <!-- 챗봇 위젯 -->
+<button id="cb-restore">💬 챗봇 다시 열기</button>
+
 <div id="cb-float">
   <div id="cb-bubble">도움이 필요하신가요? 💡</div>
   <button id="cb-toggle" aria-label="챗봇 열기">💬</button>
@@ -73,6 +79,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f8f9fa}
   <div id="cb-header">
     <span>🛒 Coupa AI 챗봇</span>
     <div>
+      <button id="cb-hide" title="숨기기">🙈</button>
       <button id="cb-expand" title="전체화면">⛶</button>
       <button id="cb-close" title="닫기">✕</button>
     </div>
@@ -101,16 +108,53 @@ const msgs = document.getElementById('cb-messages');
 const input = document.getElementById('cb-input');
 const sendBtn = document.getElementById('cb-send');
 const bubble = document.getElementById('cb-bubble');
+const float_ = document.getElementById('cb-float');
+const restoreBtn = document.getElementById('cb-restore');
 
-// 토글
-document.getElementById('cb-toggle').onclick = () => {
+// 드래그 이동
+let isDragging = false, dragMoved = false, startX, startY, origX, origY;
+float_.addEventListener('mousedown', e => {
+  isDragging = true; dragMoved = false;
+  startX = e.clientX; startY = e.clientY;
+  const r = float_.getBoundingClientRect();
+  origX = r.left; origY = r.top;
+  float_.classList.add('dragging');
+});
+document.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  const dx = e.clientX - startX, dy = e.clientY - startY;
+  if (Math.abs(dx) > 4 || Math.abs(dy) > 4) dragMoved = true;
+  float_.style.left = origX + dx + 'px'; float_.style.top = origY + dy + 'px';
+  float_.style.right = 'auto'; float_.style.bottom = 'auto';
+  if (panel.classList.contains('widget')) {
+    panel.style.left = origX + dx + 'px'; panel.style.top = (origY + dy - 530) + 'px';
+    panel.style.right = 'auto'; panel.style.bottom = 'auto';
+  }
+});
+document.addEventListener('mouseup', () => { isDragging = false; float_.classList.remove('dragging'); });
+
+// 토글 (드래그가 아닌 클릭만)
+float_.addEventListener('click', e => {
+  if (dragMoved) return;
   const open = panel.classList.toggle('open');
   bubble.style.display = open ? 'none' : '';
   if (open) input.focus();
+});
+document.getElementById('cb-close').onclick = e => {
+  e.stopPropagation();
+  panel.classList.remove('open'); bubble.style.display = '';
 };
-document.getElementById('cb-close').onclick = () => {
+
+// 숨기기 / 복원
+document.getElementById('cb-hide').onclick = e => {
+  e.stopPropagation();
   panel.classList.remove('open');
-  bubble.style.display = '';
+  float_.classList.add('hidden');
+  restoreBtn.style.display = 'block';
+};
+restoreBtn.onclick = () => {
+  float_.classList.remove('hidden');
+  restoreBtn.style.display = 'none';
 };
 
 // 전체화면 토글
