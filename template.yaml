@@ -5,14 +5,19 @@ Description: Coupa Chatbot - Lambda + FAISS + Bedrock RAG + DynamoDB
 Globals:
   Function:
     Timeout: 60
-    Runtime: python3.12
+    Runtime: python3.9
     MemorySize: 512
     Environment:
       Variables:
         DOCS_BUCKET: !Ref DocsBucket
         CHAT_TABLE: !Ref ChatTable
-        BEDROCK_MODEL_ID: anthropic.claude-3-haiku-20240307-v1:0
+        BEDROCK_MODEL_ID: amazon.nova-lite-v1:0
         EMBED_MODEL_ID: amazon.titan-embed-text-v2:0
+  Api:
+    Cors:
+      AllowMethods: "'POST,GET,OPTIONS'"
+      AllowHeaders: "'Content-Type'"
+      AllowOrigin: "'*'"
 
 Resources:
   DocsBucket:
@@ -91,9 +96,9 @@ Resources:
       LayerName: chatbot-deps
       ContentUri: lambda/deps/
       CompatibleRuntimes:
-        - python3.12
+        - python3.9
     Metadata:
-      BuildMethod: python3.12
+      BuildMethod: python3.9
 
 Outputs:
   ApiUrl:
