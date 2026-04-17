@@ -73,15 +73,11 @@ tr:hover td{background:#161b22}
         <div class="node orange">API Gateway<br><small>POST /teams</small></div>
         <div class="arrow">→</div>
         <div class="node green">Lambda<br><small>coupa-chatbot-rag</small></div>
-      </div>
-      <div class="flow-row" style="margin-left:40px">
-        <div class="arrow">↓</div>
-      </div>
-      <div class="flow-row">
+        <div class="arrow">→</div>
         <div class="node purple">FAISS 벡터 검색<br><small>문서 유사도</small></div>
-        <div class="arrow">+</div>
-        <div class="node purple">Coupa API<br><small>실시간 데이터</small></div>
-        <div class="arrow">+</div>
+        <div class="arrow">→</div>
+        <div class="node purple">Coupa API<br><small>실시간 데이터 (선택)</small></div>
+        <div class="arrow">→</div>
         <div class="node purple">Amazon Bedrock<br><small>LLM 답변 생성</small></div>
         <div class="arrow">→</div>
         <div class="node blue">Teams 답변 전송</div>
