@@ -3,395 +3,348 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coupa AI Facilitator - 시스템 아키텍처</title>
+<title>Coupa Chatbot Architecture</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',sans-serif;background:#f8f8f8;color:#222}
-header{background:#e60012;color:#fff;padding:18px 32px;display:flex;align-items:center;gap:16px}
-header h1{font-size:20px;font-weight:700}
-header p{font-size:13px;opacity:.8}
-.tabs{display:flex;border-bottom:2px solid #e60012;padding:0 32px;background:#fff}
-.tab{padding:12px 24px;font-size:14px;cursor:pointer;border:none;background:none;color:#666;border-bottom:3px solid transparent;margin-bottom:-2px}
-.tab.active{color:#e60012;border-bottom-color:#e60012;font-weight:600}
-.panel{display:none;padding:32px}
-.panel.active{display:block}
-.box{border-radius:10px;padding:14px 18px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;min-width:120px}
-.box .icon{font-size:26px}
-.box .label{font-size:13px;font-weight:600}
-.box .sub{font-size:11px;opacity:.75}
-.box-red{background:#fff0f0;border:2px solid #e60012}
-.box-blue{background:#f0f4ff;border:2px solid #4a6cf7}
-.box-green{background:#f0fff4;border:2px solid #22c55e}
-.box-orange{background:#fff7f0;border:2px solid #f97316}
-.box-gray{background:#f5f5f5;border:2px solid #aaa}
-.box-purple{background:#faf0ff;border:2px solid #a855f7}
-.box-teams{background:#e8f3ff;border:2px solid #0078d4}
-.arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#666;font-size:11px;padding:0 4px}
-.arr{font-size:22px;color:#bbb;line-height:1}
-.section-title{font-size:15px;font-weight:700;color:#e60012;border-left:4px solid #e60012;padding-left:10px;margin-bottom:16px}
-.legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px;padding:12px 16px;background:#fff;border-radius:8px;border:1px solid #eee}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:12px}
-.legend-dot{width:12px;height:12px;border-radius:3px}
-.group{background:#fff;border:1.5px dashed #ddd;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;align-items:center;gap:10px}
-.group-title{font-size:11px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0;margin-bottom:24px}
-.row{display:flex;align-items:center;gap:8px}
-/* Panel2 */
-#p2 .step-list{display:flex;flex-direction:column;gap:20px;max-width:700px;margin:0 auto}
-#p2 .step{display:flex;gap:16px;align-items:flex-start;background:#fff;border-radius:10px;padding:16px 20px;border:1.5px solid #eee}
-#p2 .step-num{width:32px;height:32px;border-radius:50%;background:#e60012;color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-#p2 .step-body h3{font-size:14px;font-weight:700;margin-bottom:4px}
-#p2 .step-body p{font-size:13px;color:#555;line-height:1.65}
-#p2 .step-body code{background:#f4f4f4;padding:1px 6px;border-radius:4px;font-size:12px;font-family:monospace}
-#p2 .connector{text-align:center;color:#ccc;font-size:20px;margin:-4px 0}
-/* Panel3 */
-#p3 .role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-#p3 .role-card{background:#fff;border-radius:12px;padding:20px;border:2px solid #eee}
-#p3 .role-card h3{font-size:15px;font-weight:700;margin-bottom:12px}
-#p3 .role-card ul{list-style:none;display:flex;flex-direction:column;gap:8px}
-#p3 .role-card li{font-size:13px;padding:8px 12px;border-radius:8px}
-#p3 .timeline{margin-top:28px;background:#fff;border-radius:12px;padding:20px;border:2px solid #eee}
-#p3 .timeline h3{font-size:15px;font-weight:700;margin-bottom:16px}
-#p3 .trow{display:grid;grid-template-columns:110px 1fr 1fr 1fr;gap:8px;margin-bottom:8px}
-#p3 .tcell{font-size:12px;padding:8px 10px;border-radius:6px;line-height:1.5}
-#p3 .th{background:#f0f0f0;font-weight:700}
+  :root {
+    --bg: #0d1117; --bg2: #161b22; --bg3: #21262d;
+    --border: #30363d; --text: #c9d1d9; --text2: #8b949e;
+    --blue: #58a6ff; --green: #3fb950; --orange: #f0883e;
+    --purple: #bc8cff; --red: #f85149; --yellow: #e3b341;
+    --teal: #39d353;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; font-size: 14px; }
+  h1 { text-align: center; padding: 24px; font-size: 22px; color: var(--blue); border-bottom: 1px solid var(--border); }
+  h1 span { color: var(--text2); font-size: 13px; display: block; margin-top: 4px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; padding: 16px 24px 0; border-bottom: 1px solid var(--border); }
+  .tab { padding: 8px 20px; cursor: pointer; border-radius: 6px 6px 0 0; color: var(--text2);
+         border: 1px solid transparent; border-bottom: none; transition: all .2s; }
+  .tab:hover { color: var(--text); background: var(--bg3); }
+  .tab.active { color: var(--blue); background: var(--bg2); border-color: var(--border); border-bottom-color: var(--bg2); }
+  .panel { display: none; padding: 24px; }
+  .panel.active { display: block; }
+
+  /* Cards */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 20px; }
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .card-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+  .badge-blue { background: #1f3a5f; color: var(--blue); }
+  .badge-green { background: #1a3a2a; color: var(--green); }
+  .badge-orange { background: #3a2a1a; color: var(--orange); }
+  .badge-purple { background: #2a1a3a; color: var(--purple); }
+  .badge-red { background: #3a1a1a; color: var(--red); }
+  .badge-yellow { background: #3a2e1a; color: var(--yellow); }
+  .endpoint { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .endpoint:last-child { border-bottom: none; }
+  .method { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; min-width: 38px; text-align: center; }
+  .post { background: #1a3a2a; color: var(--green); }
+  .get { background: #1f3a5f; color: var(--blue); }
+  .path { color: var(--text); font-family: monospace; }
+  .desc { color: var(--text2); font-size: 11px; }
+  .kv { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .kv:last-child { border-bottom: none; }
+  .kv-key { color: var(--text2); }
+  .kv-val { color: var(--text); font-family: monospace; font-size: 11px; text-align: right; max-width: 60%; word-break: break-all; }
+
+  /* Flow diagram */
+  .flow { display: flex; flex-direction: column; gap: 0; }
+  .flow-row { display: flex; align-items: center; gap: 0; }
+  .flow-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
+              padding: 8px 14px; font-size: 12px; white-space: nowrap; cursor: default;
+              transition: border-color .2s, background .2s; }
+  .flow-box:hover { border-color: var(--blue); background: #1f2937; }
+  .flow-box.lambda { border-color: var(--orange); }
+  .flow-box.aws { border-color: var(--yellow); }
+  .flow-box.ext { border-color: var(--purple); }
+  .arrow { color: var(--text2); padding: 0 6px; font-size: 16px; }
+  .arrow-down { text-align: center; color: var(--text2); font-size: 16px; line-height: 1; padding: 2px 0; margin-left: 20px; }
+
+  /* Sequence diagram */
+  .seq { overflow-x: auto; }
+  .seq-actors { display: flex; gap: 0; margin-bottom: 0; }
+  .actor { flex: 1; min-width: 110px; text-align: center; padding: 8px 4px;
+           background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
+           font-size: 11px; font-weight: 600; margin: 0 4px; }
+  .actor.highlight { border-color: var(--blue); color: var(--blue); }
+  .seq-body { position: relative; margin-top: 0; }
+  .seq-line { display: flex; align-items: center; min-height: 36px; padding: 2px 0; }
+  .seq-spacer { flex: 1; min-width: 110px; margin: 0 4px; display: flex; justify-content: center; }
+  .seq-lifeline { width: 2px; background: var(--border); height: 100%; min-height: 36px; }
+  .seq-msg { position: relative; display: flex; align-items: center; }
+  .seq-arrow { height: 2px; background: var(--blue); position: relative; }
+  .seq-arrow::after { content: '▶'; position: absolute; right: -8px; top: -7px; color: var(--blue); font-size: 12px; }
+  .seq-arrow.ret { background: var(--text2); }
+  .seq-arrow.ret::after { color: var(--text2); }
+  .seq-label { font-size: 10px; color: var(--text); white-space: nowrap; padding: 0 6px;
+               background: var(--bg); border: 1px solid var(--border); border-radius: 4px; z-index: 1; }
+  .seq-note { background: #2a2a1a; border: 1px solid var(--yellow); border-radius: 4px;
+              padding: 4px 10px; font-size: 11px; color: var(--yellow); margin: 4px 8px; }
+
+  /* Infra table */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { background: var(--bg3); color: var(--text2); padding: 8px 12px; text-align: left;
+       border-bottom: 2px solid var(--border); font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: var(--bg3); }
+  code { background: var(--bg3); padding: 1px 6px; border-radius: 4px; font-family: monospace; font-size: 11px; color: var(--orange); }
+  .section-title { font-size: 15px; font-weight: 600; color: var(--blue); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 </style>
 </head>
 <body>
+<h1>Coupa Chatbot Architecture
+  <span>API Gateway: bfmyt5l44m.execute-api.us-east-1.amazonaws.com/Prod &nbsp;|&nbsp; Region: us-east-1</span>
+</h1>
 
-<header>
-  <div>
-    <h1>🛒 Coupa AI Facilitator</h1>
-    <p>시스템 아키텍처 &amp; 알고리즘 도식</p>
-  </div>
-</header>
 
 <div class="tabs">
-  <button class="tab active" onclick="showTab('p1',this)">🏗 전체 아키텍처</button>
-  <button class="tab" onclick="showTab('p2',this)">⚙️ 알고리즘 흐름</button>
-  <button class="tab" onclick="showTab('p3',this)">👥 역할 분담</button>
+  <div class="tab active" onclick="showTab('arch')">🏗 전체 아키텍처</div>
+  <div class="tab" onclick="showTab('seq')">🔄 시퀀스 다이어그램</div>
+  <div class="tab" onclick="showTab('infra')">☁️ 인프라 구성</div>
 </div>
 
-<!-- ═══ Panel 1: 전체 아키텍처 ═══ -->
-<div id="p1" class="panel active">
-  <div class="section-title">전체 시스템 아키텍처</div>
+<!-- Panel 1: Full Architecture -->
+<div id="arch" class="panel active">
+  <div class="section-title">Lambda Functions</div>
+  <div class="grid">
 
-  <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:#0078d4"></div> Microsoft Teams / Azure Bot</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#e60012"></div> 사용자 / Chat UI</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#4a6cf7"></div> AWS API Gateway</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div> AWS Lambda</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> Amazon S3</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div> Amazon Bedrock</div>
-  </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-orange">Lambda 1</span> coupa-chatbot-rag</div>
+      <div style="color:var(--text2);font-size:11px;margin-bottom:10px;">FAISS RAG · Coupa REST API · Teams Bot · DynamoDB 대화기억</div>
+      <div class="endpoint"><span class="method post">POST</span><span class="path">/chat</span><span class="desc">챗봇 질의응답</span></div>
+      <div class="endpoint"><span class="method post">POST</span><span class="path">/teams</span><span class="desc">Teams 웹훅</span></div>
+      <div class="endpoint"><span class="method get">GET</span><span class="path">/health</span><span class="desc">헬스체크</span></div>
+    </div>
 
-  <!-- Teams 채널 -->
-  <div class="section-title">엔드유저 채널 — Microsoft Teams</div>
-  <div class="flow" style="margin-bottom:32px">
-    <div class="group" style="border-color:#0078d4">
-      <div class="group-title" style="color:#0078d4">직원 (엔드유저)</div>
-      <div class="box box-teams">
-        <div class="icon">👩‍💼</div>
-        <div class="label">Teams 채팅</div>
-        <div class="sub">사내 메신저</div>
-      </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-green">Lambda 2</span> coupa-chatbot-scheduler</div>
+      <div style="color:var(--text2);font-size:11px;margin-bottom:10px;">EventBridge 매일 09:00 KST 트리거</div>
+      <div class="endpoint"><span class="method" style="background:#1a3a2a;color:var(--teal);min-width:38px;text-align:center;">⏰</span><span class="path">D-60 만료 계약 조회</span></div>
+      <div class="endpoint"><span class="method" style="background:#1a3a2a;color:var(--teal);min-width:38px;text-align:center;">📨</span><span class="path">Teams Adaptive Card 알림</span></div>
     </div>
-    <div class="arrow"><div class="arr">→</div><div>메시지</div></div>
-    <div class="group" style="border-color:#0078d4">
-      <div class="group-title" style="color:#0078d4">Microsoft</div>
-      <div class="box box-teams">
-        <div class="icon">🤝</div>
-        <div class="label">Azure Bot Service</div>
-        <div class="sub">Bot Channel Reg.</div>
-      </div>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-purple">Lambda 3</span> coupa-chatbot-webhook</div>
+      <div style="color:var(--text2);font-size:11px;margin-bottom:10px;">Coupa 상태변경 이벤트 수신</div>
+      <div class="endpoint"><span class="method post">POST</span><span class="path">/coupa/webhook</span><span class="desc">최종 상태 (approved/rejected/cancelled)</span></div>
+      <div class="endpoint"><span class="method post">POST</span><span class="path">/coupa/approval-webhook</span><span class="desc">단계별 승인 이벤트</span></div>
     </div>
-    <div class="arrow"><div class="arr">→</div><div>POST /teams</div><div style="font-size:10px;color:#aaa">Activity JSON</div></div>
-    <div class="group">
-      <div class="group-title">AWS API Gateway</div>
-      <div class="box box-blue">
-        <div class="icon">🔀</div>
-        <div class="label">REST API</div>
-        <div class="sub">/prod/teams</div>
-      </div>
-    </div>
-    <div class="arrow"><div class="arr">→</div><div>트리거</div></div>
-    <div class="group">
-      <div class="group-title">AWS Lambda</div>
-      <div class="box box-orange">
-        <div class="icon">⚡</div>
-        <div class="label">handle_teams()</div>
-        <div class="sub">reply activity 반환</div>
-      </div>
-    </div>
-    <div class="arrow"><div class="arr">→</div><div>답변</div></div>
-    <div class="group" style="border-color:#0078d4">
-      <div class="group-title" style="color:#0078d4">Teams 채팅</div>
-      <div class="box box-teams">
-        <div class="icon">💬</div>
-        <div class="label">봇 답변 표시</div>
-        <div class="sub">마크다운 렌더링</div>
-      </div>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-blue">Lambda 4</span> coupa-chatbot-embed</div>
+      <div style="color:var(--text2);font-size:11px;margin-bottom:10px;">FAISS 인덱스 생성 (수동 실행)</div>
+      <div class="endpoint"><span class="method" style="background:#1f3a5f;color:var(--blue);min-width:38px;text-align:center;">📄</span><span class="path">PDF docs/ 파싱</span></div>
+      <div class="endpoint"><span class="method" style="background:#1f3a5f;color:var(--blue);min-width:38px;text-align:center;">📝</span><span class="path">process_guide.md 파싱</span></div>
+      <div class="endpoint"><span class="method" style="background:#1f3a5f;color:var(--blue);min-width:38px;text-align:center;">🔢</span><span class="path">Titan Embed → FAISS index.bin</span></div>
     </div>
   </div>
 
-  <!-- Chat UI 채널 -->
-  <div class="section-title">개발/테스트 채널 — Chat UI</div>
-  <div class="flow" style="margin-bottom:32px">
-    <div class="group">
-      <div class="group-title">Client</div>
-      <div class="box box-red">
-        <div class="icon">🧑‍💻</div>
-        <div class="label">index.html</div>
-        <div class="sub">Chat UI</div>
-      </div>
-    </div>
-    <div class="arrow"><div class="arr">→</div><div>POST /chat</div><div style="font-size:10px;color:#aaa">messages[]</div></div>
-    <div class="group">
-      <div class="group-title">AWS API Gateway</div>
-      <div class="box box-blue">
-        <div class="icon">🔀</div>
-        <div class="label">REST API</div>
-        <div class="sub">/prod/chat</div>
-      </div>
-    </div>
-    <div class="arrow"><div class="arr">→</div><div>트리거</div></div>
-    <div class="group">
-      <div class="group-title">AWS Lambda (Python 3.12)</div>
-      <div class="box box-orange">
-        <div class="icon">⚡</div>
-        <div class="label">lambda_function</div>
-        <div class="sub">512MB / 60s</div>
-      </div>
-      <div class="row" style="margin-top:8px;gap:6px">
-        <div class="box box-gray" style="min-width:80px;padding:8px"><div class="icon" style="font-size:16px">📦</div><div class="label" style="font-size:11px">pypdf</div></div>
-        <div class="box box-gray" style="min-width:80px;padding:8px"><div class="icon" style="font-size:16px">📦</div><div class="label" style="font-size:11px">python-pptx</div></div>
-      </div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin:0 8px">
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="arrow"><div class="arr">→</div><div>GetObject</div></div>
-        <div class="group">
-          <div class="group-title">Amazon S3</div>
-          <div class="box box-green">
-            <div class="icon">🗄️</div>
-            <div class="label">coupa-ai-docs</div>
-            <div class="sub">manuals/*.pdf<br>manuals/*.pptx</div>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="arrow"><div class="arr">→</div><div>InvokeModel</div></div>
-        <div class="group">
-          <div class="group-title">Amazon Bedrock</div>
-          <div class="box box-purple">
-            <div class="icon">🤖</div>
-            <div class="label">Claude 3 Sonnet</div>
-            <div class="sub">claude-3-sonnet<br>-20240229-v1:0</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="arrow"><div class="arr">→</div><div>{reply}</div></div>
-    <div class="group">
-      <div class="group-title">Client</div>
-      <div class="box box-red">
-        <div class="icon">💬</div>
-        <div class="label">마크다운 렌더링</div>
-        <div class="sub">marked.js</div>
-      </div>
-    </div>
-  </div>
+  <div class="section-title">데이터 흐름</div>
+  <div class="card" style="overflow-x:auto;">
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;">
 
-  <!-- 데이터 흐름 요약 -->
-  <div class="section-title">데이터 흐름 요약</div>
-  <div style="background:#fff;border-radius:10px;padding:20px;border:1.5px solid #eee;font-size:13px;line-height:2.2;font-family:monospace;overflow-x:auto">
-    <b style="color:#0078d4">[ Teams 채널 ]</b><br>
-    &nbsp;&nbsp;직원 Teams 메시지<br>
-    &nbsp;&nbsp;→ <span style="color:#0078d4">Azure Bot Service</span> → POST /prod/teams { activity }<br>
-    &nbsp;&nbsp;→ <span style="color:#f97316">Lambda</span> handle_teams() → S3 파싱(캐싱) → Bedrock<br>
-    &nbsp;&nbsp;→ reply activity → <span style="color:#0078d4">Teams 채팅에 봇 답변 표시</span><br>
-    <br>
-    <b style="color:#e60012">[ Chat UI 채널 ]</b><br>
-    &nbsp;&nbsp;index.html 입력<br>
-    &nbsp;&nbsp;→ <span style="color:#4a6cf7">API Gateway</span> POST /prod/chat { messages[] }<br>
-    &nbsp;&nbsp;→ <span style="color:#f97316">Lambda</span> → S3 파싱(캐싱) → Bedrock → { reply }<br>
-    &nbsp;&nbsp;→ <span style="color:#e60012">marked.parse(reply)</span> 렌더링
-  </div>
-</div>
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:200px;">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">💬 챗봇 질의 흐름</div>
+        <div class="flow-box ext">Teams / Web Client</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box aws">API Gateway /chat</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box lambda">Lambda 1 (RAG)</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box aws">S3 FAISS Index</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box aws">Bedrock Nova Lite</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box aws">DynamoDB (대화기억)</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box ext">응답 반환</div>
+      </div>
 
-<!-- ═══ Panel 2: 알고리즘 흐름 ═══ -->
-<div id="p2" class="panel">
-  <div class="section-title">알고리즘 상세 흐름</div>
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:200px;">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">⏰ 스케줄러 흐름</div>
+        <div class="flow-box aws">EventBridge (09:00 KST)</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box lambda">Lambda 2 (Scheduler)</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box ext">Coupa REST API</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box aws">DynamoDB ChannelMapping</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box ext">Teams Adaptive Card</div>
+      </div>
 
-  <div style="margin-bottom:12px;padding:10px 16px;background:#e8f3ff;border-radius:8px;font-size:13px;font-weight:600;color:#0078d4">
-    🟦 Teams 채널 (엔드유저 경로)
-  </div>
-  <div class="step-list">
-    <div class="step" style="border-color:#0078d4">
-      <div class="step-num" style="background:#0078d4">1</div>
-      <div class="step-body">
-        <h3>👩‍💼 직원 → Teams 메시지 입력</h3>
-        <p>사내 Teams 채팅에서 봇에게 메시지 전송<br>
-        Azure Bot Service가 수신 → <code>Activity { type:"message", text:"..." }</code> 생성</p>
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:200px;">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">🔔 웹훅 흐름</div>
+        <div class="flow-box ext">Coupa (상태변경)</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box aws">API Gateway /coupa/*</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box lambda">Lambda 3 (Webhook)</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box aws">DynamoDB ChannelMapping</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box ext">Teams 알림</div>
       </div>
-    </div>
-    <div class="connector">▼</div>
-    <div class="step" style="border-color:#0078d4">
-      <div class="step-num" style="background:#0078d4">2</div>
-      <div class="step-body">
-        <h3>📡 Azure Bot → POST /prod/teams</h3>
-        <p>Azure Bot Service가 Lambda 웹훅 URL로 Activity JSON 전달<br>
-        Lambda <code>handle_teams(activity)</code> 호출</p>
-      </div>
-    </div>
-    <div class="connector">▼</div>
-    <div class="step" style="border-color:#f97316">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <h3>📂 S3 문서 로딩 + 파싱 (캐싱)</h3>
-        <p><code>_doc_cache</code> 확인 → 없으면 S3 <code>manuals/</code> 파일 다운로드<br>
-        <b>.pdf</b> → pypdf 텍스트 추출 / <b>.pptx</b> → python-pptx 슬라이드 추출</p>
-      </div>
-    </div>
-    <div class="connector">▼</div>
-    <div class="step" style="border-color:#a855f7">
-      <div class="step-num" style="background:#a855f7">4</div>
-      <div class="step-body">
-        <h3>🤖 Bedrock Claude 호출</h3>
-        <p><code>system</code>: 매뉴얼 문서 전체 + 역할 지시<br>
-        <code>messages</code>: <code>[{ role:"user", content: activity.text }]</code><br>
-        모델: <code>claude-3-sonnet-20240229-v1:0</code> / max_tokens: 1024</p>
-      </div>
-    </div>
-    <div class="connector">▼</div>
-    <div class="step" style="border-color:#0078d4">
-      <div class="step-num" style="background:#0078d4">5</div>
-      <div class="step-body">
-        <h3>💬 reply activity 반환 → Teams 표시</h3>
-        <p><code>{ type:"message", text: reply, textFormat:"markdown" }</code> 반환<br>
-        Azure Bot Service가 Teams 채팅에 봇 답변으로 표시</p>
-      </div>
-    </div>
-  </div>
 
-  <div style="margin:32px 0 12px;padding:10px 16px;background:#fff0f0;border-radius:8px;font-size:13px;font-weight:600;color:#e60012">
-    🟥 Chat UI 채널 (개발/테스트 경로)
-  </div>
-  <div class="step-list">
-    <div class="step" style="border-color:#e60012">
-      <div class="step-num" style="background:#e60012">1</div>
-      <div class="step-body">
-        <h3>🧑‍💻 index.html → 질문 입력</h3>
-        <p><code>messages[]</code>에 추가 → <code>fetch(API, { body: { messages } })</code></p>
-      </div>
-    </div>
-    <div class="connector">▼</div>
-    <div class="step" style="border-color:#e60012">
-      <div class="step-num" style="background:#e60012">2</div>
-      <div class="step-body">
-        <h3>📡 POST /prod/chat → Lambda → Bedrock</h3>
-        <p>동일한 S3 파싱 + Bedrock 호출 로직 재사용<br>
-        <code>{ reply: "마크다운 텍스트" }</code> 반환 → <code>marked.parse()</code> 렌더링</p>
-      </div>
-    </div>
-  </div>
-
-  <div style="margin-top:32px">
-    <div class="section-title">캐싱 전략 (두 채널 공통)</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px">
-      <div style="background:#fff;border-radius:10px;padding:16px;border:2px solid #f97316">
-        <div style="font-weight:700;color:#f97316;margin-bottom:8px">❄️ 콜드 스타트</div>
-        <div style="font-size:13px;line-height:1.8;color:#555">S3 파일 다운로드 + 파싱<br><code>_doc_cache</code>에 저장<br>소요: ~3~5초</div>
-      </div>
-      <div style="background:#fff;border-radius:10px;padding:16px;border:2px solid #22c55e">
-        <div style="font-weight:700;color:#22c55e;margin-bottom:8px">🔥 웜 스타트</div>
-        <div style="font-size:13px;line-height:1.8;color:#555">캐시 즉시 재사용<br>S3 호출 없음<br>소요: ~1~2초</div>
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:200px;">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">🔢 임베딩 흐름</div>
+        <div class="flow-box aws">S3 docs/ + process_guide.md</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box lambda">Lambda 4 (Embed)</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box aws">Bedrock Titan Embed v2</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box aws">S3 faiss/index.bin</div>
+        <div class="arrow-down">↓</div>
+        <div class="flow-box aws">S3 faiss/chunks.json</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══ Panel 3: 역할 분담 ═══ -->
-<div id="p3" class="panel">
-  <div class="section-title">역할 분담</div>
-  <div class="role-grid">
-    <div class="role-card" style="border-color:#22c55e">
-      <h3 style="color:#22c55e">📋 담당자 A — 콘텐츠</h3>
-      <ul>
-        <li style="background:#f0fff4">📂 Confluence 핵심 페이지 선별</li>
-        <li style="background:#f0fff4">📄 PDF / PPT 매뉴얼 수집</li>
-        <li style="background:#f0fff4">☁️ S3 manuals/ 폴더에 업로드</li>
-        <li style="background:#f0fff4">✅ 13:00 업로드 완료 → B에게 알림</li>
-      </ul>
+
+<!-- Panel 2: Sequence Diagram -->
+<div id="seq" class="panel">
+  <div class="section-title">챗봇 질의응답 시퀀스</div>
+  <div class="card seq">
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:8px;">
+      <div class="actor">User/Teams</div>
+      <div class="actor highlight">API Gateway</div>
+      <div class="actor">Lambda 1 RAG</div>
+      <div class="actor">S3 FAISS</div>
+      <div class="actor">Bedrock</div>
+      <div class="actor">DynamoDB</div>
     </div>
-    <div class="role-card" style="border-color:#f97316">
-      <h3 style="color:#f97316">⚡ 담당자 B — AI/백엔드</h3>
-      <ul>
-        <li style="background:#fff7f0">🔧 build_layer.bat 실행 (Docker)</li>
-        <li style="background:#fff7f0">☁️ deploy_infra.bat 실행 (CloudFormation)</li>
-        <li style="background:#fff7f0">🤖 Bedrock Claude 모델 활성화</li>
-        <li style="background:#fff7f0">🔗 Azure Bot Service 등록 + 웹훅 URL 설정</li>
-        <li style="background:#fff7f0">📤 14:00 API URL → C에게 전달</li>
-      </ul>
+    <div style="font-size:11px;color:var(--text2);padding:4px 0 8px;">
+      각 행은 메시지 흐름을 나타냅니다. 화살표 방향: 요청(→) / 응답(←)
     </div>
-    <div class="role-card" style="border-color:#e60012">
-      <h3 style="color:#e60012">🖥 담당자 C — 화면</h3>
-      <ul>
-        <li style="background:#fff0f0">📂 ui/index.html 브라우저 확인</li>
-        <li style="background:#fff0f0">🔗 14:00 API URL 교체</li>
-        <li style="background:#fff0f0">🎨 UI 다듬기 (빠른질문 문구 등)</li>
-        <li style="background:#fff0f0">🧪 15:00 통합 테스트 참여</li>
-      </ul>
+    <table style="font-size:11px;">
+      <thead><tr>
+        <th>단계</th><th>From</th><th>To</th><th>메시지</th><th>비고</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>1</td><td>User</td><td>API Gateway</td><td><code>POST /chat {query, user_id}</code></td><td>질문 전송</td></tr>
+        <tr><td>2</td><td>API Gateway</td><td>Lambda 1</td><td>이벤트 전달</td><td>Lambda Proxy</td></tr>
+        <tr><td>3</td><td>Lambda 1</td><td>DynamoDB</td><td><code>GetItem coupa-chatbot-logs</code></td><td>대화 히스토리 조회</td></tr>
+        <tr><td>4</td><td>Lambda 1</td><td>S3</td><td><code>GetObject faiss/index.bin</code></td><td>벡터 인덱스 로드</td></tr>
+        <tr><td>5</td><td>Lambda 1</td><td>S3</td><td><code>GetObject faiss/chunks.json</code></td><td>청크 텍스트 로드</td></tr>
+        <tr><td>6</td><td>Lambda 1</td><td>Bedrock</td><td><code>InvokeModel titan-embed-text-v2</code></td><td>쿼리 임베딩</td></tr>
+        <tr><td>7</td><td>Lambda 1</td><td>FAISS</td><td>유사도 검색 (top-k)</td><td>관련 청크 추출</td></tr>
+        <tr><td>8</td><td>Lambda 1</td><td>Bedrock</td><td><code>InvokeModel nova-lite-v1:0</code></td><td>RAG 프롬프트 + 히스토리</td></tr>
+        <tr><td>9</td><td>Lambda 1</td><td>DynamoDB</td><td><code>PutItem coupa-chatbot-logs</code></td><td>대화 저장</td></tr>
+        <tr><td>10</td><td>Lambda 1</td><td>API Gateway</td><td>응답 JSON</td><td>answer + sources</td></tr>
+        <tr><td>11</td><td>API Gateway</td><td>User</td><td>200 OK</td><td>최종 응답</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title" style="margin-top:24px;">스케줄러 알림 시퀀스</div>
+  <div class="card seq">
+    <table style="font-size:11px;">
+      <thead><tr>
+        <th>단계</th><th>From</th><th>To</th><th>메시지</th><th>비고</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>1</td><td>EventBridge</td><td>Lambda 2</td><td>Scheduled Event (09:00 KST)</td><td>cron(0 0 * * ? *)</td></tr>
+        <tr><td>2</td><td>Lambda 2</td><td>Coupa API</td><td><code>GET /contracts?expiring_within=60</code></td><td>D-60 만료 계약 조회</td></tr>
+        <tr><td>3</td><td>Lambda 2</td><td>DynamoDB</td><td><code>Scan ChannelMapping</code></td><td>이메일→webhook URL 매핑</td></tr>
+        <tr><td>4</td><td>Lambda 2</td><td>Teams</td><td>Adaptive Card POST</td><td>계약별 알림 발송</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title" style="margin-top:24px;">웹훅 수신 시퀀스</div>
+  <div class="card seq">
+    <table style="font-size:11px;">
+      <thead><tr>
+        <th>단계</th><th>From</th><th>To</th><th>메시지</th><th>비고</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Coupa</td><td>API Gateway</td><td><code>POST /coupa/webhook</code></td><td>approved/rejected/cancelled</td></tr>
+        <tr><td>2</td><td>API Gateway</td><td>Lambda 3</td><td>이벤트 전달</td><td></td></tr>
+        <tr><td>3</td><td>Lambda 3</td><td>DynamoDB</td><td><code>GetItem ChannelMapping</code></td><td>담당자 webhook URL 조회</td></tr>
+        <tr><td>4</td><td>Lambda 3</td><td>Teams</td><td>상태변경 알림 Card</td><td>계약 ID + 상태 포함</td></tr>
+        <tr><td>5</td><td>Lambda 3</td><td>Coupa</td><td>200 OK</td><td>웹훅 수신 확인</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- Panel 3: Infrastructure -->
+<div id="infra" class="panel">
+  <div class="section-title">AWS 리소스 목록</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-title"><span class="badge badge-orange">Lambda</span> 함수 목록</div>
+      <div class="kv"><span class="kv-key">coupa-chatbot-rag</span><span class="kv-val">RAG + Teams Bot</span></div>
+      <div class="kv"><span class="kv-key">coupa-chatbot-scheduler</span><span class="kv-val">만료 계약 알림</span></div>
+      <div class="kv"><span class="kv-key">coupa-chatbot-webhook</span><span class="kv-val">Coupa 웹훅 수신</span></div>
+      <div class="kv"><span class="kv-key">coupa-chatbot-embed</span><span class="kv-val">FAISS 인덱스 생성</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-blue">API Gateway</span> 엔드포인트</div>
+      <div class="kv"><span class="kv-key">Base URL</span><span class="kv-val">bfmyt5l44m.execute-api.us-east-1.amazonaws.com/Prod</span></div>
+      <div class="kv"><span class="kv-key">POST /chat</span><span class="kv-val">챗봇 질의</span></div>
+      <div class="kv"><span class="kv-key">POST /teams</span><span class="kv-val">Teams 웹훅</span></div>
+      <div class="kv"><span class="kv-key">GET /health</span><span class="kv-val">헬스체크</span></div>
+      <div class="kv"><span class="kv-key">POST /coupa/webhook</span><span class="kv-val">최종 상태</span></div>
+      <div class="kv"><span class="kv-key">POST /coupa/approval-webhook</span><span class="kv-val">단계별 승인</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-yellow">DynamoDB</span> 테이블</div>
+      <div class="kv"><span class="kv-key">coupa-chatbot-logs</span><span class="kv-val">대화 히스토리</span></div>
+      <div class="kv"><span class="kv-key">ChannelMapping</span><span class="kv-val">이메일 → webhook URL</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-green">S3</span> 버킷 구조</div>
+      <div class="kv"><span class="kv-key">버킷명</span><span class="kv-val">coupa-chatbot-docs-637423264170</span></div>
+      <div class="kv"><span class="kv-key">docs/</span><span class="kv-val">PDF 원본 문서</span></div>
+      <div class="kv"><span class="kv-key">knowledge/process_guide.md</span><span class="kv-val">프로세스 가이드</span></div>
+      <div class="kv"><span class="kv-key">faiss/index.bin</span><span class="kv-val">FAISS 벡터 인덱스</span></div>
+      <div class="kv"><span class="kv-key">faiss/chunks.json</span><span class="kv-val">청크 텍스트</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-purple">Bedrock</span> 모델</div>
+      <div class="kv"><span class="kv-key">LLM</span><span class="kv-val">amazon.nova-lite-v1:0</span></div>
+      <div class="kv"><span class="kv-key">임베딩</span><span class="kv-val">amazon.titan-embed-text-v2:0</span></div>
+      <div class="kv"><span class="kv-key">리전</span><span class="kv-val">us-east-1</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="badge badge-red">EventBridge</span> 스케줄</div>
+      <div class="kv"><span class="kv-key">Rule</span><span class="kv-val">매일 09:00 KST</span></div>
+      <div class="kv"><span class="kv-key">Cron</span><span class="kv-val">cron(0 0 * * ? *)</span></div>
+      <div class="kv"><span class="kv-key">Target</span><span class="kv-val">coupa-chatbot-scheduler</span></div>
     </div>
   </div>
 
-  <div class="timeline">
-    <h3>📅 하루 타임라인</h3>
-    <div class="trow">
-      <div class="tcell th">시간</div>
-      <div class="tcell th" style="color:#22c55e">A (콘텐츠)</div>
-      <div class="tcell th" style="color:#f97316">B (AI/백엔드)</div>
-      <div class="tcell th" style="color:#e60012">C (화면)</div>
-    </div>
-    <div class="trow">
-      <div class="tcell th">09:00~10:00</div>
-      <div class="tcell" style="background:#f0fff4">Confluence 페이지 선별</div>
-      <div class="tcell" style="background:#fff7f0">Bedrock 모델 활성화</div>
-      <div class="tcell" style="background:#fff0f0">Kiro 설치 확인</div>
-    </div>
-    <div class="trow">
-      <div class="tcell th">10:00~12:00</div>
-      <div class="tcell" style="background:#f0fff4">PDF/PPT 수집</div>
-      <div class="tcell" style="background:#fff7f0">build_layer.bat<br>deploy_infra.bat</div>
-      <div class="tcell" style="background:#fff0f0">index.html 화면 확인</div>
-    </div>
-    <div class="trow">
-      <div class="tcell th">13:00</div>
-      <div class="tcell" style="background:#f0fff4">✅ S3 업로드 완료</div>
-      <div class="tcell" style="background:#fff7f0">Lambda 코드 배포<br>Azure Bot 웹훅 등록</div>
-      <div class="tcell" style="background:#fff0f0">UI 다듬기</div>
-    </div>
-    <div class="trow">
-      <div class="tcell th">14:00</div>
-      <div class="tcell" style="background:#f0fff4">테스트 질문 준비</div>
-      <div class="tcell" style="background:#fff7f0">✅ API URL → C 전달</div>
-      <div class="tcell" style="background:#fff0f0">API URL 교체 완료</div>
-    </div>
-    <div class="trow">
-      <div class="tcell th">15:00~17:00</div>
-      <div class="tcell" style="background:#f5f5f5">🧪 전원 통합 테스트</div>
-      <div class="tcell" style="background:#f5f5f5">🧪 프롬프트 튜닝</div>
-      <div class="tcell" style="background:#f5f5f5">🧪 데모 준비</div>
-    </div>
-  </div>
+  <div class="section-title">전체 리소스 상세</div>
+  <table>
+    <thead><tr><th>서비스</th><th>리소스명</th><th>용도</th><th>비고</th></tr></thead>
+    <tbody>
+      <tr><td>Lambda</td><td><code>coupa-chatbot-rag</code></td><td>챗봇 핵심 로직</td><td>FAISS RAG, Teams Bot, Coupa API</td></tr>
+      <tr><td>Lambda</td><td><code>coupa-chatbot-scheduler</code></td><td>만료 계약 알림</td><td>EventBridge 트리거</td></tr>
+      <tr><td>Lambda</td><td><code>coupa-chatbot-webhook</code></td><td>Coupa 이벤트 수신</td><td>승인/거절/취소 처리</td></tr>
+      <tr><td>Lambda</td><td><code>coupa-chatbot-embed</code></td><td>벡터 인덱스 생성</td><td>수동 실행</td></tr>
+      <tr><td>API Gateway</td><td><code>bfmyt5l44m</code></td><td>REST API 진입점</td><td>Stage: Prod</td></tr>
+      <tr><td>DynamoDB</td><td><code>coupa-chatbot-logs</code></td><td>대화 기억 저장</td><td>user_id 기반 파티션</td></tr>
+      <tr><td>DynamoDB</td><td><code>ChannelMapping</code></td><td>채널 매핑</td><td>이메일 → Teams webhook URL</td></tr>
+      <tr><td>S3</td><td><code>coupa-chatbot-docs-637423264170</code></td><td>문서 및 인덱스 저장</td><td>docs/, knowledge/, faiss/</td></tr>
+      <tr><td>Bedrock</td><td><code>amazon.nova-lite-v1:0</code></td><td>LLM 추론</td><td>RAG 응답 생성</td></tr>
+      <tr><td>Bedrock</td><td><code>amazon.titan-embed-text-v2:0</code></td><td>텍스트 임베딩</td><td>쿼리 및 문서 벡터화</td></tr>
+      <tr><td>EventBridge</td><td>Daily Schedule</td><td>스케줄 트리거</td><td>cron(0 0 * * ? *) UTC</td></tr>
+    </tbody>
+  </table>
 </div>
 
 <script>
-function showTab(id, btn) {
+function showTab(id) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
+  event.target.classList.add('active');
 }
 </script>
 </body>

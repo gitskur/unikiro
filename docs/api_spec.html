@@ -3,173 +3,289 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coupa AI Facilitator - API 명세서</title>
+<title>UniKiro API Spec</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#e6edf3}
-header{background:#161b22;border-bottom:1px solid #30363d;padding:14px 28px}
-header h1{font-size:17px;font-weight:700;color:#f0f6fc}
-header p{font-size:11px;color:#8b949e;margin-top:3px}
-.wrap{max-width:900px;margin:0 auto;padding:28px}
-.sec{font-size:13px;font-weight:700;color:#e60012;border-left:3px solid #e60012;padding-left:10px;margin:28px 0 14px}
-.card{background:#161b22;border:1px solid #30363d;border-radius:10px;margin-bottom:16px;overflow:hidden}
-.card-head{padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #30363d}
-.card-body{padding:16px 18px}
-.method{font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px}
-.get{background:#0d1f0d;color:#56d364;border:1px solid #22c55e}
-.post{background:#0d1f2d;color:#79c0ff;border:1px solid #4a6cf7}
-.opt{background:#1f1500;color:#e3b341;border:1px solid #f0ad00}
-.path{font-family:monospace;font-size:13px;color:#f0f6fc;font-weight:600}
-.badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700}
-.b-ok{background:#0d1f0d;color:#56d364;border:1px solid #22c55e}
-.b-err{background:#1f0d0d;color:#ff7b72;border:1px solid #e60012}
-.b-warn{background:#1f1500;color:#e3b341;border:1px solid #f0ad00}
-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px}
-th{background:#21262d;color:#8b949e;padding:7px 12px;text-align:left;font-weight:600}
-td{padding:7px 12px;border-bottom:1px solid #21262d;color:#e6edf3;vertical-align:top}
-tr:last-child td{border-bottom:none}
-.code{background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:12px 14px;font-family:monospace;font-size:12px;line-height:1.8;overflow-x:auto;margin:8px 0}
-.kw{color:#ff7b72}.fn{color:#d2a8ff}.str{color:#a5d6ff}.cm{color:#8b949e}.num{color:#79c0ff}
-.label{font-size:11px;color:#8b949e;margin-bottom:4px;font-weight:600}
-.req{color:#ff7b72;font-size:10px;margin-left:4px}
-.opt-tag{color:#8b949e;font-size:10px;margin-left:4px}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; font-size: 14px; }
+  header { background: #161b22; border-bottom: 1px solid #30363d; padding: 20px 32px; }
+  header h1 { font-size: 22px; color: #58a6ff; }
+  header p { color: #8b949e; margin-top: 4px; font-size: 13px; }
+  .base-url { display: inline-block; background: #1c2128; border: 1px solid #30363d; border-radius: 6px; padding: 6px 12px; margin-top: 10px; font-family: monospace; color: #79c0ff; font-size: 13px; }
+
+  .tabs { display: flex; gap: 2px; padding: 16px 32px 0; background: #0d1117; border-bottom: 1px solid #30363d; }
+  .tab { padding: 10px 20px; cursor: pointer; border-radius: 6px 6px 0 0; color: #8b949e; border: 1px solid transparent; border-bottom: none; font-size: 13px; transition: all .15s; }
+  .tab:hover { color: #c9d1d9; background: #161b22; }
+  .tab.active { color: #58a6ff; background: #161b22; border-color: #30363d; border-bottom-color: #161b22; margin-bottom: -1px; }
+
+  .content { padding: 28px 32px; max-width: 900px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .endpoint { background: #161b22; border: 1px solid #30363d; border-radius: 8px; margin-bottom: 20px; overflow: hidden; }
+  .endpoint-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; user-select: none; }
+  .endpoint-header:hover { background: #1c2128; }
+  .method { font-weight: 700; font-size: 12px; padding: 3px 8px; border-radius: 4px; min-width: 46px; text-align: center; }
+  .GET  { background: #1a4a1a; color: #3fb950; border: 1px solid #3fb950; }
+  .POST { background: #1a2f4a; color: #58a6ff; border: 1px solid #58a6ff; }
+  .path { font-family: monospace; font-size: 14px; color: #e6edf3; }
+  .desc { color: #8b949e; font-size: 13px; margin-left: auto; }
+  .chevron { color: #8b949e; transition: transform .2s; margin-left: 8px; }
+  .endpoint.open .chevron { transform: rotate(90deg); }
+
+  .endpoint-body { display: none; padding: 0 18px 18px; border-top: 1px solid #30363d; }
+  .endpoint.open .endpoint-body { display: block; }
+
+  .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: #8b949e; letter-spacing: .8px; margin: 14px 0 6px; }
+  pre { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 12px 14px; font-family: 'Consolas', monospace; font-size: 13px; overflow-x: auto; line-height: 1.6; }
+  .key   { color: #79c0ff; }
+  .str   { color: #a5d6ff; }
+  .type  { color: #ffa657; }
+  .opt   { color: #8b949e; }
+  .cmt   { color: #6e7681; font-style: italic; }
+
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .badge { font-size: 12px; padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+  .badge-green  { background: #1a4a1a; color: #3fb950; border: 1px solid #3fb950; }
+  .badge-red    { background: #4a1a1a; color: #f85149; border: 1px solid #f85149; }
+  .badge-yellow { background: #3a2e00; color: #e3b341; border: 1px solid #e3b341; }
+  .badge-blue   { background: #1a2f4a; color: #58a6ff; border: 1px solid #58a6ff; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  th { text-align: left; padding: 8px 10px; background: #1c2128; color: #8b949e; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+  td { padding: 8px 10px; border-top: 1px solid #21262d; font-size: 13px; }
+  td:first-child { font-family: monospace; color: #79c0ff; }
+  td:nth-child(2) { color: #ffa657; }
+  td:nth-child(3) { color: #8b949e; }
+
+  .common-item { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px 18px; margin-bottom: 14px; }
+  .common-item h3 { font-size: 14px; color: #e6edf3; margin-bottom: 8px; }
+  .kv { display: flex; gap: 12px; font-size: 13px; margin-top: 6px; }
+  .kv .k { color: #79c0ff; font-family: monospace; min-width: 220px; }
+  .kv .v { color: #a5d6ff; font-family: monospace; }
 </style>
 </head>
 <body>
+
 <header>
-  <h1>📋 Coupa AI Facilitator — API 명세서</h1>
-  <p>Base URL: https://{api-id}.execute-api.us-east-1.amazonaws.com/prod &nbsp;|&nbsp; Version: 1.0.0 &nbsp;|&nbsp; 2026-04-17</p>
+  <h1>UniKiro API Specification</h1>
+  <p>AWS API Gateway — 인증 없음 (Public)</p>
+  <div class="base-url">Base URL: https://bfmyt5l44m.execute-api.us-east-1.amazonaws.com/Prod</div>
 </header>
-<div class="wrap">
 
-<div class="sec">개요</div>
-<div class="card">
-  <div class="card-body">
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('chat')">Chat API</div>
+  <div class="tab" onclick="switchTab('teams')">Teams Webhook</div>
+  <div class="tab" onclick="switchTab('coupa')">Coupa Webhook</div>
+  <div class="tab" onclick="switchTab('common')">공통</div>
+</div>
+
+<!-- ===== CHAT API ===== -->
+<div class="content">
+<div id="panel-chat" class="panel active">
+
+  <div class="endpoint open" id="ep-chat">
+    <div class="endpoint-header" onclick="toggle('ep-chat')">
+      <span class="method POST">POST</span>
+      <span class="path">/chat</span>
+      <span class="desc">AI 챗봇 질의응답</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="endpoint-body">
+      <div class="section-label">Request Body</div>
+      <pre><span class="cmt">// Content-Type: application/json</span>
+{
+  <span class="key">"message"</span>: <span class="type">string</span>,        <span class="cmt">// required — 사용자 질문</span>
+  <span class="key">"user_id"</span>: <span class="type">string</span>         <span class="cmt">// optional — 사용자 식별자</span>
+}</pre>
+
+      <div class="section-label">Response 200</div>
+      <pre>{
+  <span class="key">"answer"</span>:    <span class="type">string</span>,        <span class="cmt">// AI 응답 텍스트</span>
+  <span class="key">"timestamp"</span>: <span class="type">string</span>,        <span class="cmt">// ISO 8601</span>
+  <span class="key">"sources"</span>:   <span class="type">string[]</span>       <span class="cmt">// 참조 문서 목록</span>
+}</pre>
+
+      <div class="section-label">Error Responses</div>
+      <div class="badge-row">
+        <span class="badge badge-yellow">400</span>
+        <span class="badge badge-red">500</span>
+      </div>
+      <pre style="margin-top:8px"><span class="cmt">// 400 Bad Request</span>
+{ <span class="key">"error"</span>: <span class="str">"message required"</span> }
+
+<span class="cmt">// 500 Internal Server Error</span>
+{ <span class="key">"error"</span>: <span class="type">string</span> }</pre>
+    </div>
+  </div>
+
+  <div class="endpoint" id="ep-health">
+    <div class="endpoint-header" onclick="toggle('ep-health')">
+      <span class="method GET">GET</span>
+      <span class="path">/health</span>
+      <span class="desc">헬스체크</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="endpoint-body">
+      <div class="section-label">Response 200</div>
+      <pre>{ <span class="key">"status"</span>: <span class="str">"ok"</span> }</pre>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== TEAMS WEBHOOK ===== -->
+<div id="panel-teams" class="panel">
+
+  <div class="endpoint open" id="ep-teams">
+    <div class="endpoint-header" onclick="toggle('ep-teams')">
+      <span class="method POST">POST</span>
+      <span class="path">/teams</span>
+      <span class="desc">Microsoft Teams Bot Framework</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="endpoint-body">
+      <div class="section-label">Request Body — Bot Framework Activity</div>
+      <pre>{
+  <span class="key">"type"</span>: <span class="type">string</span>,           <span class="cmt">// e.g. "message"</span>
+  <span class="key">"text"</span>: <span class="type">string</span>,           <span class="cmt">// 사용자 메시지</span>
+  <span class="key">"from"</span>: {
+    <span class="key">"id"</span>:   <span class="type">string</span>,
+    <span class="key">"name"</span>: <span class="type">string</span>
+  },
+  <span class="key">"id"</span>: <span class="type">string</span>              <span class="cmt">// activity ID</span>
+}</pre>
+
+      <div class="section-label">Response 200</div>
+      <pre>{
+  <span class="key">"type"</span>:       <span class="str">"message"</span>,
+  <span class="key">"text"</span>:       <span class="type">string</span>,        <span class="cmt">// AI 응답 (Markdown)</span>
+  <span class="key">"textFormat"</span>: <span class="str">"markdown"</span>,
+  <span class="key">"replyToId"</span>:  <span class="type">string</span>         <span class="cmt">// 원본 activity ID</span>
+}</pre>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== COUPA WEBHOOK ===== -->
+<div id="panel-coupa" class="panel">
+
+  <div class="endpoint open" id="ep-coupa-contract">
+    <div class="endpoint-header" onclick="toggle('ep-coupa-contract')">
+      <span class="method POST">POST</span>
+      <span class="path">/coupa/webhook</span>
+      <span class="desc">Coupa 계약 상태 알림</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="endpoint-body">
+      <div class="section-label">Request Body — Coupa Contract Object</div>
+      <pre>{
+  <span class="key">"id"</span>:        <span class="type">number</span>,
+  <span class="key">"name"</span>:      <span class="type">string</span>,
+  <span class="key">"status"</span>:    <span class="type">string</span>,        <span class="cmt">// 아래 알림 대상 참조</span>
+  <span class="key">"stop_date"</span>: <span class="type">string</span>,        <span class="cmt">// ISO 8601 date</span>
+  <span class="key">"contract-owner"</span>: {
+    <span class="key">"email"</span>:    <span class="type">string</span>,
+    <span class="key">"fullname"</span>: <span class="type">string</span>
+  },
+  <span class="key">"supplier"</span>: {
+    <span class="key">"name"</span>: <span class="type">string</span>
+  }
+}</pre>
+
+      <div class="section-label">알림 발송 대상 Status</div>
+      <div class="badge-row">
+        <span class="badge badge-green">approved</span>
+        <span class="badge badge-red">rejected</span>
+        <span class="badge badge-yellow">cancelled</span>
+        <span class="badge badge-blue">pending_approval</span>
+      </div>
+
+      <div class="section-label">Response 200</div>
+      <pre>{ <span class="key">"status"</span>: <span class="str">"ok"</span> }</pre>
+    </div>
+  </div>
+
+  <div class="endpoint" id="ep-coupa-approval">
+    <div class="endpoint-header" onclick="toggle('ep-coupa-approval')">
+      <span class="method POST">POST</span>
+      <span class="path">/coupa/approval-webhook</span>
+      <span class="desc">Coupa 결재 상태 알림</span>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="endpoint-body">
+      <div class="section-label">Request Body — Coupa Approvals Object</div>
+      <pre>{
+  <span class="key">"id"</span>:               <span class="type">number</span>,
+  <span class="key">"status"</span>:           <span class="type">string</span>,   <span class="cmt">// 아래 알림 대상 참조</span>
+  <span class="key">"approver"</span>: {
+    <span class="key">"email"</span>:    <span class="type">string</span>,
+    <span class="key">"fullname"</span>: <span class="type">string</span>
+  },
+  <span class="key">"approvable-type"</span>:  <span class="type">string</span>,   <span class="cmt">// e.g. "Contract"</span>
+  <span class="key">"approvable-id"</span>:    <span class="type">number</span>,
+  <span class="key">"position"</span>:         <span class="type">number</span>
+}</pre>
+
+      <div class="section-label">알림 발송 대상 Status</div>
+      <div class="badge-row">
+        <span class="badge badge-green">approved</span>
+        <span class="badge badge-red">rejected</span>
+      </div>
+
+      <div class="section-label">Response 200</div>
+      <pre>{ <span class="key">"status"</span>: <span class="str">"ok"</span> }</pre>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== 공통 ===== -->
+<div id="panel-common" class="panel">
+
+  <div class="common-item">
+    <h3>Base URL</h3>
+    <div class="kv"><span class="k">Production</span><span class="v">https://bfmyt5l44m.execute-api.us-east-1.amazonaws.com/Prod</span></div>
+  </div>
+
+  <div class="common-item">
+    <h3>공통 Response Headers</h3>
+    <div class="kv"><span class="k">Content-Type</span><span class="v">application/json; charset=utf-8</span></div>
+    <div class="kv"><span class="k">Access-Control-Allow-Origin</span><span class="v">*</span></div>
+  </div>
+
+  <div class="common-item">
+    <h3>인증</h3>
+    <p style="color:#8b949e;font-size:13px;margin-top:4px">인증 없음 — AWS API Gateway Public Endpoint</p>
+  </div>
+
+  <div class="common-item">
+    <h3>Endpoint 목록</h3>
     <table>
-      <tr><td style="color:#8b949e;width:140px">Base URL</td><td><code style="color:#a5d6ff">https://{api-id}.execute-api.us-east-1.amazonaws.com/prod</code></td></tr>
-      <tr><td style="color:#8b949e">인증</td><td>없음 (Open — 테스트용, 운영 시 API Key 추가 권장)</td></tr>
-      <tr><td style="color:#8b949e">Content-Type</td><td><code style="color:#a5d6ff">application/json</code></td></tr>
-      <tr><td style="color:#8b949e">CORS</td><td>허용 (<code style="color:#a5d6ff">Access-Control-Allow-Origin: *</code>)</td></tr>
-      <tr><td style="color:#8b949e">백엔드</td><td>AWS Lambda (Python 3.12) + Amazon Bedrock Claude 3 Sonnet</td></tr>
+      <tr><th>Method</th><th>Path</th><th>설명</th></tr>
+      <tr><td>POST</td><td>/chat</td><td>AI 챗봇 질의응답</td></tr>
+      <tr><td>GET</td><td>/health</td><td>헬스체크</td></tr>
+      <tr><td>POST</td><td>/teams</td><td>Teams Bot Framework 수신</td></tr>
+      <tr><td>POST</td><td>/coupa/webhook</td><td>Coupa 계약 상태 알림</td></tr>
+      <tr><td>POST</td><td>/coupa/approval-webhook</td><td>Coupa 결재 상태 알림</td></tr>
     </table>
   </div>
-</div>
-
-<div class="sec">엔드포인트</div>
-
-<!-- POST /chat -->
-<div class="card">
-  <div class="card-head">
-    <span class="method post">POST</span>
-    <span class="path">/chat</span>
-    <span style="font-size:12px;color:#8b949e;margin-left:8px">Chat UI용 대화 API</span>
-  </div>
-  <div class="card-body">
-    <div class="label">Request Body <span class="req">*필수</span></div>
-    <table>
-      <tr><th>필드</th><th>타입</th><th>필수</th><th>설명</th></tr>
-      <tr><td><code>messages</code></td><td>array</td><td><span class="req">필수</span></td><td>대화 히스토리 배열 (OpenAI 형식)</td></tr>
-      <tr><td><code>messages[].role</code></td><td>string</td><td><span class="req">필수</span></td><td><code>"user"</code> 또는 <code>"assistant"</code></td></tr>
-      <tr><td><code>messages[].content</code></td><td>string</td><td><span class="req">필수</span></td><td>메시지 내용</td></tr>
-    </table>
-    <div class="label">Request 예시</div>
-    <div class="code">{
-  <span class="str">"messages"</span>: [
-    { <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"500만원 IT 장비 구매 절차 알려줘"</span> }
-  ]
-}</div>
-    <div class="label" style="margin-top:12px">Response</div>
-    <table>
-      <tr><th>상태코드</th><th>필드</th><th>타입</th><th>설명</th></tr>
-      <tr><td><span class="badge b-ok">200</span></td><td><code>reply</code></td><td>string</td><td>Claude 답변 (마크다운 형식)</td></tr>
-      <tr><td><span class="badge b-err">400</span></td><td><code>error</code></td><td>string</td><td>"messages required"</td></tr>
-      <tr><td><span class="badge b-err">500</span></td><td><code>error</code></td><td>string</td><td>Lambda/Bedrock 내부 오류 메시지</td></tr>
-    </table>
-    <div class="label">Response 예시 (200)</div>
-    <div class="code">{
-  <span class="str">"reply"</span>: <span class="str">"500만원은 **팀장 → 구매팀** 승인이 필요합니다.\n\n**필요 서류**\n- 구매요청서(A-01)\n- 견적서 2개 이상"</span>
-}</div>
-  </div>
-</div>
-
-<!-- POST /teams -->
-<div class="card">
-  <div class="card-head">
-    <span class="method post">POST</span>
-    <span class="path">/teams</span>
-    <span style="font-size:12px;color:#8b949e;margin-left:8px">Microsoft Teams Bot Framework 웹훅</span>
-  </div>
-  <div class="card-body">
-    <div class="label">Request Body — Bot Framework Activity</div>
-    <table>
-      <tr><th>필드</th><th>타입</th><th>설명</th></tr>
-      <tr><td><code>type</code></td><td>string</td><td><code>"message"</code>일 때만 처리, 나머지는 200 무시</td></tr>
-      <tr><td><code>text</code></td><td>string</td><td>사용자 메시지 텍스트</td></tr>
-      <tr><td><code>id</code></td><td>string</td><td>Activity ID (replyToId에 사용)</td></tr>
-    </table>
-    <div class="label">Request 예시 (Azure Bot → Lambda)</div>
-    <div class="code">{
-  <span class="str">"type"</span>: <span class="str">"message"</span>,
-  <span class="str">"id"</span>: <span class="str">"f:abc123"</span>,
-  <span class="str">"text"</span>: <span class="str">"계약 연장 절차 알려줘"</span>,
-  <span class="str">"from"</span>: { <span class="str">"id"</span>: <span class="str">"user-id"</span>, <span class="str">"name"</span>: <span class="str">"홍길동"</span> }
-}</div>
-    <div class="label" style="margin-top:12px">Response — Reply Activity</div>
-    <table>
-      <tr><th>상태코드</th><th>필드</th><th>설명</th></tr>
-      <tr><td><span class="badge b-ok">200</span></td><td><code>type, text, textFormat, replyToId</code></td><td>Teams 답변 Activity</td></tr>
-      <tr><td><span class="badge b-ok">200</span></td><td>(빈 응답)</td><td>type != "message" 또는 text 없음</td></tr>
-      <tr><td><span class="badge b-err">500</span></td><td><code>error</code></td><td>내부 오류</td></tr>
-    </table>
-    <div class="label">Response 예시 (200)</div>
-    <div class="code">{
-  <span class="str">"type"</span>: <span class="str">"message"</span>,
-  <span class="str">"text"</span>: <span class="str">"계약 연장 시 필요 서류:\n- 계약연장요청서(C-02)\n- 기존 계약서 사본"</span>,
-  <span class="str">"textFormat"</span>: <span class="str">"markdown"</span>,
-  <span class="str">"replyToId"</span>: <span class="str">"f:abc123"</span>
-}</div>
-  </div>
-</div>
-
-<!-- OPTIONS /chat -->
-<div class="card">
-  <div class="card-head">
-    <span class="method opt">OPTIONS</span>
-    <span class="path">/chat</span>
-    <span style="font-size:12px;color:#8b949e;margin-left:8px">CORS Preflight</span>
-  </div>
-  <div class="card-body">
-    <div class="label">Response Headers (200)</div>
-    <div class="code">Access-Control-Allow-Origin:  *
-Access-Control-Allow-Headers: Content-Type
-Access-Control-Allow-Methods: POST, OPTIONS</div>
-  </div>
-</div>
-
-<div class="sec">공통 응답 헤더</div>
-<div class="card">
-  <div class="card-body">
-    <div class="code">Content-Type:                 application/json
-Access-Control-Allow-Origin:  *
-Access-Control-Allow-Headers: Content-Type, Authorization
-Access-Control-Allow-Methods: POST, OPTIONS</div>
-  </div>
-</div>
-
-<div class="sec">에러 코드 정의</div>
-<div class="card">
-  <div class="card-body">
-    <table>
-      <tr><th>코드</th><th>원인</th><th>해결</th></tr>
-      <tr><td><span class="badge b-err">400</span></td><td>messages 배열 누락 또는 빈 배열</td><td>요청 body에 messages 포함</td></tr>
-      <tr><td><span class="badge b-err">500</span></td><td>Bedrock AccessDeniedException</td><td>Bedrock 콘솔에서 Claude 모델 활성화</td></tr>
-      <tr><td><span class="badge b-err">500</span></td><td>S3 NoSuchBucket</td><td>DOCS_BUCKET 환경변수 확인</td></tr>
-      <tr><td><span class="badge b-err">500</span></td><td>Bedrock ValidationException (토큰 초과)</td><td>messages 길이 제한 또는 히스토리 truncate</td></tr>
-      <tr><td><span class="badge b-warn">504</span></td><td>Lambda 60초 타임아웃</td><td>메모리 증가 또는 PDF 파일 크기 최적화</td></tr>
-    </table>
-  </div>
-</div>
 
 </div>
+</div><!-- .content -->
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', ['chat','teams','coupa','common'][i] === name);
+  });
+  document.querySelectorAll('.panel').forEach(p => {
+    p.classList.toggle('active', p.id === 'panel-' + name);
+  });
+}
+function toggle(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+</script>
 </body>
 </html>
