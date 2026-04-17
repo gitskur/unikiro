@@ -124,10 +124,14 @@ document.addEventListener('mousemove', e => {
   if (!isDragging) return;
   const dx = e.clientX - startX, dy = e.clientY - startY;
   if (Math.abs(dx) > 4 || Math.abs(dy) > 4) dragMoved = true;
-  float_.style.left = origX + dx + 'px'; float_.style.top = origY + dy + 'px';
+  const fw = float_.offsetWidth, fh = float_.offsetHeight;
+  const nx = Math.max(0, Math.min(window.innerWidth - fw, origX + dx));
+  const ny = Math.max(0, Math.min(window.innerHeight - fh, origY + dy));
+  float_.style.left = nx + 'px'; float_.style.top = ny + 'px';
   float_.style.right = 'auto'; float_.style.bottom = 'auto';
   if (panel.classList.contains('widget')) {
-    panel.style.left = origX + dx + 'px'; panel.style.top = (origY + dy - 530) + 'px';
+    panel.style.left = Math.max(0, nx - 320) + 'px';
+    panel.style.top = Math.max(0, ny - 530) + 'px';
     panel.style.right = 'auto'; panel.style.bottom = 'auto';
   }
 });
@@ -159,9 +163,21 @@ restoreBtn.onclick = () => {
 
 // 전체화면 토글
 document.getElementById('cb-expand').onclick = () => {
+  const goFull = !panel.classList.contains('full');
   panel.classList.toggle('widget');
   panel.classList.toggle('full');
-  document.getElementById('cb-expand').textContent = panel.classList.contains('full') ? '⊡' : '⛶';
+  document.getElementById('cb-expand').textContent = goFull ? '⊡' : '⛶';
+  if (goFull) {
+    panel.style.left = ''; panel.style.top = ''; panel.style.right = ''; panel.style.bottom = '';
+  } else {
+    // 위젯으로 돌아올 때 플로팅 버튼 위치 기준으로 복원
+    const r = float_.getBoundingClientRect();
+    panel.style.right = '24px'; panel.style.bottom = '92px';
+    panel.style.left = 'auto'; panel.style.top = 'auto';
+    // 플로팅 버튼도 원위치
+    float_.style.right = '24px'; float_.style.bottom = '24px';
+    float_.style.left = 'auto'; float_.style.top = 'auto';
+  }
 };
 
 // 빠른 질문
