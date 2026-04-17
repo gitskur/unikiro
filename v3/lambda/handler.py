@@ -1,4 +1,4 @@
-"""
+﻿"""
 Coupa AI Chatbot v3 - 통합 Lambda Bot Handler
 - FAISS RAG 벡터 검색 (PDF 문서 기반)
 - Coupa REST API 실시간 계약/PO 조회
@@ -188,7 +188,7 @@ def rag_answer(query, user_id="anonymous"):
 # ── 응답 헬퍼 ───────────────────────────────────────────────────────────
 
 CORS_HEADERS = {
-    "Content-Type": "application/json",
+    "Content-Type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type,Authorization",
     "Access-Control-Allow-Methods": "POST,GET,OPTIONS",
