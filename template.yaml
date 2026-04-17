@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Coupa Chatbot - Lambda + FAISS + Bedrock RAG + DynamoDB
+
+Globals:
+  Function:
+    Timeout: 60
+    Runtime: python3.12
+    MemorySize: 512
+    Environment:
+      Variables:
+        DOCS_BUCKET: !Ref DocsBucket
+        CHAT_TABLE: !Ref ChatTable
+        BEDROCK_MODEL_ID: anthropic.claude-3-haiku-20240307-v1:0
+        EMBED_MODEL_ID: amazon.titan-embed-text-v2:0
+
+Resources:
+  DocsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub coupa-chatbot-docs-${AWS::AccountId}
+
+  ChatTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: coupa-chatbot-logs
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: user_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+
+  ChatFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: coupa-chatbot-rag
+      CodeUri: lambda/
+      Handler: handler.lambda_handler
+      Layers:
+        - !Ref DepsLayer
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref DocsBucket
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ChatTable
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: "*"
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /chat
+            Method: post
+        Health:
+          Type: Api
+          Properties:
+            Path: /health
+            Method: get
+
+  EmbedFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: coupa-chatbot-embed
+      CodeUri: lambda/
+      Handler: embed.lambda_handler
+      Timeout: 300
+      MemorySize: 1024
+      Layers:
+        - !Ref DepsLayer
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref DocsBucket
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: "*"
+
+  DepsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: chatbot-deps
+      ContentUri: lambda/deps/
+      CompatibleRuntimes:
+        - python3.12
+    Metadata:
+      BuildMethod: python3.12
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod
+  DocsBucket:
+    Description: S3 bucket for PDF documents
+    Value: !Ref DocsBucket
+  ChatTable:
+    Description: DynamoDB table for chat logs
+    Value: !Ref ChatTable

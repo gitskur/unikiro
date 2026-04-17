@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.aws-sam/
+.env
+/tmp/
+*.zip
+node_modules/
+.vscode/
