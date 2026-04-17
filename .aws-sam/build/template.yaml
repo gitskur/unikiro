@@ -1,6 +1,19 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Coupa Chatbot - Lambda + FAISS + Bedrock RAG + DynamoDB
+Description: Coupa AI Chatbot v3 - FAISS RAG + Coupa API + Teams + Scheduler
+Parameters:
+  CoupaBaseUrl:
+    Type: String
+    Default: ''
+    Description: Coupa API base URL (optional, for live contract queries)
+  CoupaApiKey:
+    Type: String
+    Default: ''
+    NoEcho: true
+  TeamsDefaultWebhookUrl:
+    Type: String
+    Default: ''
+    Description: Teams Incoming Webhook fallback URL
 Globals:
   Function:
     Timeout: 60
@@ -14,10 +27,16 @@ Globals:
           Ref: ChatTable
         BEDROCK_MODEL_ID: amazon.nova-lite-v1:0
         EMBED_MODEL_ID: amazon.titan-embed-text-v2:0
+        COUPA_BASE_URL:
+          Ref: CoupaBaseUrl
+        COUPA_API_KEY:
+          Ref: CoupaApiKey
+        TEAMS_DEFAULT_WEBHOOK_URL:
+          Ref: TeamsDefaultWebhookUrl
   Api:
     Cors:
       AllowMethods: '''POST,GET,OPTIONS'''
-      AllowHeaders: '''Content-Type'''
+      AllowHeaders: '''Content-Type,Authorization'''
       AllowOrigin: '''*'''
 Resources:
   DocsBucket:
@@ -40,6 +59,20 @@ Resources:
         KeyType: HASH
       - AttributeName: timestamp
         KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+  ChannelMappingTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ChannelMapping
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: email
+        AttributeType: S
+      KeySchema:
+      - AttributeName: email
+        KeyType: HASH
   ChatFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -57,14 +90,18 @@ Resources:
             Ref: ChatTable
       - Statement:
         - Effect: Allow
-          Action:
-          - bedrock:InvokeModel
+          Action: bedrock:InvokeModel
           Resource: '*'
       Events:
-        Api:
+        Chat:
           Type: Api
           Properties:
             Path: /chat
+            Method: post
+        Teams:
+          Type: Api
+          Properties:
+            Path: /teams
             Method: post
         Health:
           Type: Api
@@ -89,11 +126,51 @@ Resources:
             Ref: DocsBucket
       - Statement:
         - Effect: Allow
-          Action:
-          - bedrock:InvokeModel
+          Action: bedrock:InvokeModel
           Resource: '*'
     Metadata:
       SamResourceId: EmbedFunction
+  SchedulerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: coupa-chatbot-scheduler
+      CodeUri: SchedulerFunction
+      Handler: handler.handler
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: ChannelMappingTable
+      Events:
+        DailySchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 * * ? *)
+            Enabled: false
+    Metadata:
+      SamResourceId: SchedulerFunction
+  WebhookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: coupa-chatbot-webhook
+      CodeUri: WebhookFunction
+      Handler: handler.handler
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: ChannelMappingTable
+      Events:
+        ContractWebhook:
+          Type: Api
+          Properties:
+            Path: /coupa/webhook
+            Method: post
+        ApprovalWebhook:
+          Type: Api
+          Properties:
+            Path: /coupa/approval-webhook
+            Method: post
+    Metadata:
+      SamResourceId: WebhookFunction
   DepsLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
@@ -106,14 +183,17 @@ Resources:
       SamResourceId: DepsLayer
 Outputs:
   ApiUrl:
-    Description: API Gateway endpoint
     Value:
       Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod
+  TeamsWebhookUrl:
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teams
+  CoupaWebhookUrl:
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/coupa/webhook
+  ApprovalWebhookUrl:
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/coupa/approval-webhook
   DocsBucket:
-    Description: S3 bucket for PDF documents
     Value:
       Ref: DocsBucket
-  ChatTable:
-    Description: DynamoDB table for chat logs
-    Value:
-      Ref: ChatTable
