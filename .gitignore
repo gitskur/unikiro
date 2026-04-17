@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 *.pptx
+.aws-sam/
+.DS_Store
+*.DS_Store

@@ -1,0 +1,119 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Coupa Chatbot - Lambda + FAISS + Bedrock RAG + DynamoDB
+Globals:
+  Function:
+    Timeout: 60
+    Runtime: python3.9
+    MemorySize: 512
+    Environment:
+      Variables:
+        DOCS_BUCKET:
+          Ref: DocsBucket
+        CHAT_TABLE:
+          Ref: ChatTable
+        BEDROCK_MODEL_ID: amazon.nova-lite-v1:0
+        EMBED_MODEL_ID: amazon.titan-embed-text-v2:0
+  Api:
+    Cors:
+      AllowMethods: '''POST,GET,OPTIONS'''
+      AllowHeaders: '''Content-Type'''
+      AllowOrigin: '''*'''
+Resources:
+  DocsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: coupa-chatbot-docs-${AWS::AccountId}
+  ChatTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: coupa-chatbot-logs
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: user_id
+        AttributeType: S
+      - AttributeName: timestamp
+        AttributeType: S
+      KeySchema:
+      - AttributeName: user_id
+        KeyType: HASH
+      - AttributeName: timestamp
+        KeyType: RANGE
+  ChatFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: coupa-chatbot-rag
+      CodeUri: ChatFunction
+      Handler: handler.lambda_handler
+      Layers:
+      - Ref: DepsLayer
+      Policies:
+      - S3ReadPolicy:
+          BucketName:
+            Ref: DocsBucket
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ChatTable
+      - Statement:
+        - Effect: Allow
+          Action:
+          - bedrock:InvokeModel
+          Resource: '*'
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /chat
+            Method: post
+        Health:
+          Type: Api
+          Properties:
+            Path: /health
+            Method: get
+    Metadata:
+      SamResourceId: ChatFunction
+  EmbedFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: coupa-chatbot-embed
+      CodeUri: EmbedFunction
+      Handler: embed.lambda_handler
+      Timeout: 300
+      MemorySize: 1024
+      Layers:
+      - Ref: DepsLayer
+      Policies:
+      - S3CrudPolicy:
+          BucketName:
+            Ref: DocsBucket
+      - Statement:
+        - Effect: Allow
+          Action:
+          - bedrock:InvokeModel
+          Resource: '*'
+    Metadata:
+      SamResourceId: EmbedFunction
+  DepsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: chatbot-deps
+      ContentUri: DepsLayer
+      CompatibleRuntimes:
+      - python3.9
+    Metadata:
+      BuildMethod: python3.9
+      SamResourceId: DepsLayer
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod
+  DocsBucket:
+    Description: S3 bucket for PDF documents
+    Value:
+      Ref: DocsBucket
+  ChatTable:
+    Description: DynamoDB table for chat logs
+    Value:
+      Ref: ChatTable
