@@ -1,0 +1,42 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.17",
+  "version": "1.0.0",
+  "id": "{{BOT_APP_ID}}",
+  "developer": {
+    "name": "Coupa Chatbot",
+    "websiteUrl": "https://github.com/gitskur/unikiro",
+    "privacyUrl": "https://github.com/gitskur/unikiro",
+    "termsOfUseUrl": "https://github.com/gitskur/unikiro"
+  },
+  "name": {
+    "short": "Coupa 도우미",
+    "full": "Coupa & eProcurement 챗봇 도우미"
+  },
+  "description": {
+    "short": "Coupa 및 eProcurement 관련 질문에 답변하는 AI 챗봇",
+    "full": "Coupa Quick Start, eProcurement Express, CSP Admin Guide 문서를 기반으로 질문에 답변합니다."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#4f46e5",
+  "bots": [
+    {
+      "botId": "{{BOT_APP_ID}}",
+      "scopes": ["personal", "team", "groupChat"],
+      "commandLists": [
+        {
+          "scopes": ["personal"],
+          "commands": [
+            { "title": "help", "description": "사용 방법 안내" },
+            { "title": "feedback", "description": "답변에 대한 피드백 제공" }
+          ]
+        }
+      ]
+    }
+  ],
+  "permissions": ["identity", "messageTeamMembers"],
+  "validDomains": []
+}

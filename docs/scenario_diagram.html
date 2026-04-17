@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coupa AI Facilitator - 시나리오 상세 다이어그램</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#e6edf3}
+header{background:#161b22;border-bottom:1px solid #30363d;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:17px;font-weight:700;color:#f0f6fc}
+header p{font-size:11px;color:#8b949e;margin-top:2px}
+.tabs{display:flex;border-bottom:1px solid #30363d;padding:0 28px;background:#161b22;overflow-x:auto}
+.tab{padding:11px 18px;font-size:12px;cursor:pointer;border:none;background:none;color:#8b949e;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tab.active{color:#f0f6fc;border-bottom-color:#e60012;font-weight:600}
+.panel{display:none;padding:24px 28px}
+.panel.active{display:block}
+.sec{font-size:12px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
+
+/* Scenario flow */
+.sf{display:flex;flex-direction:column;gap:0}
+.sf-row{display:flex;align-items:stretch;gap:0;min-height:48px}
+.sf-actor{width:110px;flex-shrink:0;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;font-size:11px;font-weight:600;color:#8b949e}
+.sf-line{width:2px;flex-shrink:0;background:#21262d;position:relative}
+.sf-line.active-line{background:#e60012}
+.sf-line.teams-line{background:#0078d4}
+.sf-line.ok-line{background:#22c55e}
+.sf-line.warn-line{background:#f0ad00}
+.sf-msg{flex:1;display:flex;align-items:center;padding:6px 14px;gap:10px}
+.arrow-r{color:#30363d;font-size:14px}
+.arrow-r.red{color:#e60012}
+.arrow-r.blue{color:#0078d4}
+.arrow-r.green{color:#22c55e}
+.arrow-r.orange{color:#f97316}
+.arrow-r.yellow{color:#f0ad00}
+.bubble{padding:6px 12px;border-radius:6px;font-size:12px;line-height:1.5;max-width:480px}
+.b-user{background:#1a1a2e;border:1px solid #e60012;color:#ff6b6b}
+.b-bot{background:#161b22;border:1px solid #30363d;color:#e6edf3}
+.b-ok{background:#0d1f0d;border:1px solid #22c55e;color:#56d364}
+.b-warn{background:#1f1500;border:1px solid #f0ad00;color:#e3b341}
+.b-err{background:#1f0d0d;border:1px solid #e60012;color:#ff7b72}
+.b-info{background:#0d1f2d;border:1px solid #0078d4;color:#79c0ff}
+.b-gray{background:#161b22;border:1px solid #30363d;color:#8b949e}
+.tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:4px;margin-right:4px;font-weight:700}
+.tag-ok{background:#0d1f0d;color:#56d364;border:1px solid #22c55e}
+.tag-err{background:#1f0d0d;color:#ff7b72;border:1px solid #e60012}
+.tag-warn{background:#1f1500;color:#e3b341;border:1px solid #f0ad00}
+.tag-info{background:#0d1f2d;color:#79c0ff;border:1px solid #0078d4}
+
+/* Grid */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px}
+.card h4{font-size:13px;font-weight:700;margin-bottom:12px}
+
+/* Decision tree */
+.dt{display:flex;flex-direction:column;gap:8px}
+.dt-node{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:8px;font-size:12px}
+.dt-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.dt-body h5{font-size:12px;font-weight:700;margin-bottom:3px}
+.dt-body p{font-size:11px;color:#8b949e;line-height:1.6}
+.dt-body code{background:#21262d;padding:1px 5px;border-radius:3px;font-size:11px;font-family:monospace}
+.indent{margin-left:28px;border-left:2px solid #21262d;padding-left:12px}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>🔍 Coupa AI Facilitator — 시나리오 상세 다이어그램</h1>
+    <p>정상 흐름 · 에러 케이스 · 엣지 케이스 · 의사결정 트리</p>
+  </div>
+</header>
+<div class="tabs">
+  <button class="tab active" onclick="T('p1',this)">✅ 정상 흐름</button>
+  <button class="tab" onclick="T('p2',this)">❌ 에러 케이스</button>
+  <button class="tab" onclick="T('p3',this)">⚠️ 엣지 케이스</button>
+  <button class="tab" onclick="T('p4',this)">🌳 의사결정 트리</button>
+</div>
+
+
+<!-- P1: 정상 흐름 -->
+<div id="p1" class="panel active">
+  <div class="g2">
+
+    <!-- 시나리오 1 -->
+    <div class="card">
+      <h4><span class="tag tag-ok">HAPPY</span> 구매 절차 문의 → 정상 답변</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">직원</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"500만원 IT 장비 구매 절차 알려줘"</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">캐시 확인 → S3 파싱 → Bedrock 호출</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">봇</div>
+          <div class="sf-line ok-line"></div>
+          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">✅ 팀장 → 구매팀 승인 필요<br>구매요청서(A-01) + 견적서 2개 이상</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">HTTP</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="tag tag-ok">200</span><code style="font-size:11px;color:#8b949e">{ reply: "..." }</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 시나리오 2 -->
+    <div class="card">
+      <h4><span class="tag tag-ok">HAPPY</span> 멀티턴 대화 (문맥 유지)</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">직원</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"계약 연장하려면?"</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">봇</div>
+          <div class="sf-line ok-line"></div>
+          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">계약연장요청서(C-02) + 기존 계약서 사본 필요</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">직원</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"금액이 800만원이야"</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">messages[] 히스토리 포함 → Bedrock 전달</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">봇</div>
+          <div class="sf-line ok-line"></div>
+          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">800만원 → 법무팀 검토 필수 추가 안내</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 시나리오 3 -->
+    <div class="card">
+      <h4><span class="tag tag-ok">HAPPY</span> 웜스타트 (캐시 히트)</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">직원</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"긴급 구매 방법은?"</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-info">_doc_cache != None → S3 호출 생략 ⚡</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Bedrock</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">캐시된 문서로 즉시 Claude 호출 (~1초)</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">봇</div>
+          <div class="sf-line ok-line"></div>
+          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">팀장 구두 승인 → 3일 내 사후 서류 제출</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 시나리오 4 -->
+    <div class="card">
+      <h4><span class="tag tag-ok">HAPPY</span> 콜드스타트 (최초 파싱)</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">직원</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"예산 외 구매 절차?"</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-warn">_doc_cache == None → S3 파싱 시작 (~3~5초)</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">S3</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">PDF/PPT 다운로드 → pypdf/pptx 파싱 → 캐싱</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">봇</div>
+          <div class="sf-line ok-line"></div>
+          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">예산변경신청서(B-01) 선제출 후 일반 절차</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- P2: 에러 케이스 -->
+<div id="p2" class="panel">
+  <div class="g2">
+
+    <!-- 에러 1: 문서에 없는 질문 -->
+    <div class="card">
+      <h4><span class="tag tag-err">ERROR</span> 문서에 없는 내용 질문</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">직원</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"복리후생 신청 방법 알려줘"</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Bedrock</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">system prompt: "문서에 없으면 확인 필요 안내"</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">봇</div>
+          <div class="sf-line warn-line"></div>
+          <div class="sf-msg"><span class="arrow-r yellow">←</span><div class="bubble b-warn">⚠️ 해당 내용은 담당 부서에 확인이 필요합니다.<br>구매/계약 관련 질문만 답변 가능합니다.</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">HTTP</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="tag tag-ok">200</span><span style="font-size:11px;color:#8b949e">정상 반환 (에러 아님, 봇 응답)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 에러 2: 빈 메시지 -->
+    <div class="card">
+      <h4><span class="tag tag-err">ERROR</span> 빈 메시지 / messages 누락</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">클라이언트</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">POST /chat { } <span style="color:#8b949e">(body 없음)</span></div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">messages = body.get("messages", []) → []</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">if not messages: → 400 반환</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">HTTP</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="tag tag-err">400</span><code style="font-size:11px;color:#ff7b72">{ "error": "messages required" }</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 에러 3: Bedrock 오류 -->
+    <div class="card">
+      <h4><span class="tag tag-err">ERROR</span> Bedrock 호출 실패</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">직원</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"구매 절차 알려줘"</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Bedrock</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">AccessDeniedException<br>(모델 미활성화 or IAM 권한 없음)</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">except Exception as e: → 500 반환</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">HTTP</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="tag tag-err">500</span><code style="font-size:11px;color:#ff7b72">{ "error": "AccessDeniedException..." }</code></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">해결</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r yellow">→</span><div class="bubble b-warn">Bedrock 콘솔 → Model Access → Claude 승인</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 에러 4: S3 파싱 실패 -->
+    <div class="card">
+      <h4><span class="tag tag-err">ERROR</span> S3 파일 파싱 실패</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">S3에서 손상된 PDF 다운로드</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">pypdf</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">PdfReadError: EOF marker not found</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-warn">except: parts.append("[파일명 파싱 실패]")<br>→ 나머지 파일은 계속 처리</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">봇</div>
+          <div class="sf-line ok-line"></div>
+          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">다른 파일 기반으로 부분 답변 가능</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">HTTP</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="tag tag-ok">200</span><span style="font-size:11px;color:#8b949e">서비스 중단 없이 계속 동작</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 에러 5: Lambda 타임아웃 -->
+    <div class="card">
+      <h4><span class="tag tag-err">ERROR</span> Lambda 타임아웃 (60초 초과)</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">직원</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">질문 전송 (대용량 PDF 파싱 중)</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">Task timed out after 60.00 seconds</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">API GW</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="tag tag-err">504</span><code style="font-size:11px;color:#ff7b72">Endpoint request timed out</code></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Chat UI</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r yellow">←</span><div class="bubble b-warn">⚠️ API 연결 오류입니다. API URL을 확인해 주세요.</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">해결</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">→</span><div class="bubble b-info">메모리 512MB↑ / PDF 파일 크기 최적화</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 에러 6: CORS 오류 -->
+    <div class="card">
+      <h4><span class="tag tag-err">ERROR</span> CORS 오류 (브라우저)</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">브라우저</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">OPTIONS preflight 요청</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">API GW</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">CORS header 없음 → 브라우저 차단</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">콘솔</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">Access-Control-Allow-Origin 헤더 없음</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">해결</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r green">→</span><div class="bubble b-ok">Lambda _resp()에 CORS 헤더 포함<br>CloudFormation OPTIONS method 재배포</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- P3: 엣지 케이스 -->
+<div id="p3" class="panel">
+  <div class="g2">
+
+    <!-- 엣지 1: 욕설/부적절한 입력 -->
+    <div class="card">
+      <h4><span class="tag tag-warn">EDGE</span> 욕설 / 부적절한 입력</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">직원</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"이 시스템 왜 이렇게 별로야 ㅡㅡ"</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Bedrock</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">Claude의 기본 안전 필터 적용<br>system prompt: 구매/계약만 답변</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">봇</div>
+          <div class="sf-line warn-line"></div>
+          <div class="sf-msg"><span class="arrow-r yellow">←</span><div class="bubble b-warn">구매/계약 프로세스 관련 질문을 입력해 주세요. 다른 도움이 필요하시면 담당 부서에 문의해 주세요.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 엣지 2: 매우 긴 입력 -->
+    <div class="card">
+      <h4><span class="tag tag-warn">EDGE</span> 매우 긴 입력 (토큰 초과)</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">직원</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">5000자 이상의 긴 텍스트 입력</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Bedrock</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-err">ValidationException: Input too long<br>(context window 초과)</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">except Exception as e → 500 반환</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">해결</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r green">→</span><div class="bubble b-ok">입력 길이 제한 추가 권장<br>UI에서 maxlength 설정</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 엣지 3: S3 파일 없음 -->
+    <div class="card">
+      <h4><span class="tag tag-warn">EDGE</span> S3 manuals/ 폴더 비어있음</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">list_objects_v2 → Contents: []</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-warn">_doc_cache = "등록된 문서가 없습니다."</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">봇</div>
+          <div class="sf-line warn-line"></div>
+          <div class="sf-msg"><span class="arrow-r yellow">←</span><div class="bubble b-warn">현재 등록된 매뉴얼이 없습니다.<br>담당자에게 문서 업로드를 요청해 주세요.</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">HTTP</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="tag tag-ok">200</span><span style="font-size:11px;color:#8b949e">서비스 중단 없음</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 엣지 4: Teams Activity type != message -->
+    <div class="card">
+      <h4><span class="tag tag-warn">EDGE</span> Teams conversationUpdate 이벤트</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">Azure Bot</div>
+          <div class="sf-line teams-line"></div>
+          <div class="sf-msg"><span class="arrow-r blue">→</span><div class="bubble b-info">{ type: "conversationUpdate" }<br>(봇이 채널에 추가될 때 자동 발생)</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">activity.get("type") != "message"<br>→ 즉시 200 반환 (무시)</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">HTTP</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="tag tag-ok">200</span><span style="font-size:11px;color:#8b949e">빈 응답 (정상 처리)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 엣지 5: 동시 요청 (캐시 경쟁) -->
+    <div class="card">
+      <h4><span class="tag tag-warn">EDGE</span> 동시 요청 (콜드스타트 경쟁)</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">직원 A</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">동시에 질문 전송</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">직원 B</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">동시에 질문 전송</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Lambda</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-warn">각각 별도 컨테이너 → 각자 S3 파싱<br>(Lambda 동시 실행 특성)</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">결과</div>
+          <div class="sf-line ok-line"></div>
+          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">각 컨테이너 독립 캐시 → 정상 동작<br>이후 웜스타트 시 각자 캐시 재사용</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 엣지 6: 한국어 외 입력 -->
+    <div class="card">
+      <h4><span class="tag tag-warn">EDGE</span> 영어 / 혼용 입력</h4>
+      <div class="sf">
+        <div class="sf-row">
+          <div class="sf-actor">직원</div>
+          <div class="sf-line active-line"></div>
+          <div class="sf-msg"><span class="arrow-r red">→</span><div class="bubble b-user">"How to create a purchase order?"</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">Bedrock</div>
+          <div class="sf-line"></div>
+          <div class="sf-msg"><span class="arrow-r">⚙</span><div class="bubble b-gray">system: "답변은 한국어로 작성하세요"</div></div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-actor">봇</div>
+          <div class="sf-line ok-line"></div>
+          <div class="sf-msg"><span class="arrow-r green">←</span><div class="bubble b-ok">구매요청서 작성 절차를 안내해 드릴게요...<br>(한국어로 답변)</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- P4: 의사결정 트리 -->
+<div id="p4" class="panel">
+  <div class="sec">Lambda 요청 처리 의사결정 트리</div>
+  <div class="g2">
+
+    <div class="card">
+      <h4>📥 요청 수신 분기</h4>
+      <div class="dt">
+        <div class="dt-node" style="background:#161b22;border:1px solid #30363d">
+          <div class="dt-icon">📨</div>
+          <div class="dt-body"><h5>요청 수신</h5><p>event.httpMethod 확인</p></div>
+        </div>
+        <div class="indent">
+          <div class="dt-node" style="background:#0d1f2d;border:1px solid #0078d4;margin-bottom:6px">
+            <div class="dt-icon">🔀</div>
+            <div class="dt-body"><h5>OPTIONS → CORS preflight</h5><p>즉시 200 반환 (헤더만)</p></div>
+          </div>
+          <div class="dt-node" style="background:#1f1500;border:1px solid #f0ad00;margin-bottom:6px">
+            <div class="dt-icon">🔀</div>
+            <div class="dt-body"><h5>path == "/teams"</h5><p><code>handle_teams(activity)</code> 호출</p></div>
+          </div>
+          <div class="dt-node" style="background:#0d1f0d;border:1px solid #22c55e">
+            <div class="dt-icon">🔀</div>
+            <div class="dt-body"><h5>path == "/chat"</h5><p>messages 검증 → <code>ask_claude()</code></p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>🤖 Bedrock 호출 전 검증</h4>
+      <div class="dt">
+        <div class="dt-node" style="background:#161b22;border:1px solid #30363d">
+          <div class="dt-icon">🔍</div>
+          <div class="dt-body"><h5>messages 배열 확인</h5></div>
+        </div>
+        <div class="indent">
+          <div class="dt-node" style="background:#1f0d0d;border:1px solid #e60012;margin-bottom:6px">
+            <div class="dt-icon">❌</div>
+            <div class="dt-body"><h5>비어있음 → 400</h5><p><code>{ "error": "messages required" }</code></p></div>
+          </div>
+          <div class="dt-node" style="background:#0d1f0d;border:1px solid #22c55e">
+            <div class="dt-icon">✅</div>
+            <div class="dt-body"><h5>있음 → get_docs() 호출</h5></div>
+          </div>
+        </div>
+        <div class="dt-node" style="background:#161b22;border:1px solid #30363d;margin-top:8px">
+          <div class="dt-icon">🗄️</div>
+          <div class="dt-body"><h5>_doc_cache 확인</h5></div>
+        </div>
+        <div class="indent">
+          <div class="dt-node" style="background:#1f1500;border:1px solid #f0ad00;margin-bottom:6px">
+            <div class="dt-icon">❄️</div>
+            <div class="dt-body"><h5>None → S3 파싱</h5><p>list_objects → get_object → _parse() → 캐싱</p></div>
+          </div>
+          <div class="dt-node" style="background:#0d1f0d;border:1px solid #22c55e">
+            <div class="dt-icon">🔥</div>
+            <div class="dt-body"><h5>있음 → 즉시 반환</h5></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>📄 파일 파싱 분기</h4>
+      <div class="dt">
+        <div class="dt-node" style="background:#161b22;border:1px solid #30363d">
+          <div class="dt-icon">📂</div>
+          <div class="dt-body"><h5>파일 확장자 확인</h5></div>
+        </div>
+        <div class="indent">
+          <div class="dt-node" style="background:#0d1f2d;border:1px solid #0078d4;margin-bottom:6px">
+            <div class="dt-icon">📄</div>
+            <div class="dt-body"><h5>.pdf → pypdf</h5><p>PdfReader → 페이지별 extract_text()</p></div>
+          </div>
+          <div class="dt-node" style="background:#1a0d2e;border:1px solid #a855f7;margin-bottom:6px">
+            <div class="dt-icon">📊</div>
+            <div class="dt-body"><h5>.pptx/.ppt → python-pptx</h5><p>Presentation → 슬라이드별 shape.text</p></div>
+          </div>
+          <div class="dt-node" style="background:#1f0d0d;border:1px solid #e60012">
+            <div class="dt-icon">❌</div>
+            <div class="dt-body"><h5>기타 → ValueError</h5><p>except: "[파일명 파싱 실패]" 기록 후 계속</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>💬 Teams Activity 분기</h4>
+      <div class="dt">
+        <div class="dt-node" style="background:#161b22;border:1px solid #30363d">
+          <div class="dt-icon">📨</div>
+          <div class="dt-body"><h5>activity.type 확인</h5></div>
+        </div>
+        <div class="indent">
+          <div class="dt-node" style="background:#0d1f0d;border:1px solid #22c55e;margin-bottom:6px">
+            <div class="dt-icon">✅</div>
+            <div class="dt-body"><h5>"message" → 처리</h5><p>activity.text → ask_claude() → reply activity</p></div>
+          </div>
+          <div class="dt-node" style="background:#161b22;border:1px solid #30363d;margin-bottom:6px">
+            <div class="dt-icon">⏭</div>
+            <div class="dt-body"><h5>기타 → 무시</h5><p>conversationUpdate 등 → 200 빈 응답</p></div>
+          </div>
+        </div>
+        <div class="dt-node" style="background:#161b22;border:1px solid #30363d;margin-top:8px">
+          <div class="dt-icon">📝</div>
+          <div class="dt-body"><h5>activity.text 확인</h5></div>
+        </div>
+        <div class="indent">
+          <div class="dt-node" style="background:#1f0d0d;border:1px solid #e60012;margin-bottom:6px">
+            <div class="dt-icon">❌</div>
+            <div class="dt-body"><h5>비어있음 → 200 빈 응답</h5></div>
+          </div>
+          <div class="dt-node" style="background:#0d1f0d;border:1px solid #22c55e">
+            <div class="dt-icon">✅</div>
+            <div class="dt-body"><h5>있음 → Bedrock 호출</h5></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function T(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
