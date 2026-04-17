@@ -23,9 +23,10 @@ body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;overflow
 .pdf-btn:hover{background:#1f6feb}
 @media print{
   .nav,.pdf-btn{display:none!important}
-  body{overflow:visible!important;height:auto!important}
+  body{overflow:visible!important;height:auto!important;background:#0d1117}
   .slides{height:auto!important;position:static!important}
-  .slide{display:flex!important;position:relative!important;page-break-after:always;height:100vh;break-after:page}
+  .slide{display:none!important}
+  .slide.print-show{display:flex!important;position:relative!important;page-break-after:always;break-after:page;height:100vh;width:100vw}
 }
 
 /* Typography */
@@ -93,7 +94,7 @@ td{padding:9px 14px;border-bottom:1px solid #21262d;color:#e6edf3}
 </head>
 <body>
 <div class="slides">
-<button class="pdf-btn" onclick="window.print()">⬇ PDF 저장</button>
+<button class="pdf-btn" onclick="printAll()">⬇ PDF 저장</button>
 
 
 <!-- Slide 1: Title -->
@@ -432,6 +433,12 @@ function show(n) {
 }
 
 function go(d) { show(cur + d); }
+
+  function printAll() {
+    slides.forEach(s => s.classList.add('print-show'));
+    window.print();
+    slides.forEach(s => s.classList.remove('print-show'));
+  }
 
 document.addEventListener('keydown', e => {
   if (e.key==='ArrowRight'||e.key==='ArrowDown') go(1);
